@@ -37,6 +37,8 @@ $route = new routing();
 	</div>
 	<script defer src="<?=$route->root?>js/libs/mootools-core-1.4.5-full-nocompat-yc.js"></script>
 	<script defer src="<?=$route->root?>js/libs/mootools-more-1.4.0.1.js"></script>
+	<script defer src="<?=$route->root?>js/libs/easeljs-0.4.1.min.js"></script>
+	<script defer src="<?=$route->root?>js/libs/tweenjs-0.2.0.min.js"></script>
 	<script defer src="<?=$route->root?>js/main.js"></script>
 	<script>
 		window._gaq = [['_setAccount','UAXXXXXXXX1'],['_trackPageview'],['_trackPageLoadTime']];
