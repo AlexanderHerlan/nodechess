@@ -26,9 +26,55 @@ $route = new routing();
 		</header>
 		<div id="main" role="main">
 			<div id="chessgame">
+				<div id="legend">
+					<div id="horizontal_legend">
+						<ul>
+							<li>A</li>
+							<li>B</li>
+							<li>C</li>
+							<li>D</li>
+							<li>E</li>
+							<li>F</li>
+							<li>G</li>
+							<li>H</li>
+						</ul>
+					</div>
+					<div id="vertical_legend">
+						<ul>
+							<li>8</li>
+							<li>7</li>
+							<li>6</li>
+							<li>5</li>
+							<li>4</li>
+							<li>3</li>
+							<li>2</li>
+							<li>1</li>
+						</ul>
+					</div>
+				</div>
 				<canvas id="chesscanvas" width="512" height="512">
 
 				</canvas>
+				<div id="chesssidebar">
+					<div id="chessinfo">
+						<h2>Game Info</h2>
+						<div id="chessinfo_pane">
+
+						</div>
+					</div>
+					<div id="chesshistory">
+						<h2>History</h2>
+						<div id="chathistory_buffer">
+
+						</div>
+					</div>
+					<div id="chesschat">
+						<h2>Chat</h2>
+						<div id="chesschat_buffer">
+
+						</div>
+					</div>
+				</div
 			</div>
 		</div>
 		<footer>
