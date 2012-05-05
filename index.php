@@ -25,9 +25,11 @@ $route = new routing();
 	
 		</header>
 		<div id="main" role="main">
-			Page: <?=$route->page?> <br />
-			Commands: <? print_r($route->commands); ?> <br />
-			Get: <? print_r($route->get); ?>
+			<div id="chessgame">
+				<canvas id="chesscanvas" width="512" height="512">
+
+				</canvas>
+			</div>
 		</div>
 		<footer>
 	
