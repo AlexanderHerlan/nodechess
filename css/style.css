@@ -217,10 +217,33 @@ td { vertical-align: top; }
 /* ==|== primary styles =====================================================
    Author:
    ========================================================================== */
+html  {
+  height: 100%;
+}
 
+body {
+  background-image: linear-gradient(bottom, rgb(116,127,133) 1%, rgb(179,196,204) 51%);
+  background-image: -o-linear-gradient(bottom, rgb(116,127,133) 1%, rgb(179,196,204) 51%);
+  background-image: -moz-linear-gradient(bottom, rgb(116,127,133) 1%, rgb(179,196,204) 51%);
+  background-image: -webkit-linear-gradient(bottom, rgb(116,127,133) 1%, rgb(179,196,204) 51%);
+  background-image: -ms-linear-gradient(bottom, rgb(116,127,133) 1%, rgb(179,196,204) 51%);
 
+  background-image: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    color-stop(0.01, rgb(116,127,133)),
+    color-stop(0.51, rgb(179,196,204))
+  );
+}
 
-
+#chessgame {
+  width:512px;
+  height:512px;
+  margin:auto;
+  background-color: #CCCCCC;
+  margin-top: 128px;
+}
 
 
 
