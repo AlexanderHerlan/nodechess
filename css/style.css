@@ -344,7 +344,7 @@ li,ul {
 }
 #chesschat_buffer {
   width: 300px;
-  height: 152px;
+  height: 130px;
   margin-left: 10px;
   padding-left: 4px;
   padding-bottom: 4px;
@@ -355,9 +355,12 @@ li,ul {
   border-right-style: solid;
   border-right-width: 1px;
   border-right-color: #000000;
-  border-bottom-style: solid;
-  border-bottom-width: 1px;
-  border-bottom-color: #000000;
+}
+#chesschat input {
+  margin-left: 10px;
+  width: 308px;
+  border-color: black;
+  border-width: 1px;
 }
 
 

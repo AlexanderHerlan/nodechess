@@ -22,7 +22,6 @@ window.addEvent('domready', function() {
 		init_rooks('white');
 		init_rooks('black');
 	};
-	
 });
 
 function init_pawns(color) {

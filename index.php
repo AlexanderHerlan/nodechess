@@ -73,6 +73,7 @@ $route = new routing();
 						<div id="chesschat_buffer">
 
 						</div>
+						<input type="text" value="" id="chesschat_input" name="chesschat_input">
 					</div>
 				</div
 			</div>
