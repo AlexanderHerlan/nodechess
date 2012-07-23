@@ -10,7 +10,7 @@ $route = new routing();
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
 <head>
 	<meta charset="utf-8">
-	<title>SnakeByte Labs</title>
+	<title>Multiplayer Chess</title>
 	<meta name="description" content="">
 	<meta name="author" content="Alex Herlan">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
