@@ -20,6 +20,16 @@ $route = new routing();
 
 <body>
    <!--[if lt IE 7]><p class=chromeframe>Your browser is extremely <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser now</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
+    <div class="overlay" id="overlay" style="display:none;"></div>
+    <div class="box" id="box">
+		<h1>Welcome!</h1>
+		<form id="frm_player_details" >
+			<p>Please choose a name: <input type="text" id="player_name"></p>
+			<p align="right"><button type="button" id="continue_player">Continue</button></p>
+		</form>
+	</div>
+
+
 	<div id="container">
 		<header>
 	
@@ -59,7 +69,7 @@ $route = new routing();
 					<div id="chessinfo">
 						<h2>Game Info</h2>
 						<div id="chessinfo_pane">
-
+							<div id="chesschat_status">Choose a name in the chat box.</div>
 						</div>
 					</div>
 					<div id="chesshistory">
@@ -70,7 +80,7 @@ $route = new routing();
 					</div>
 					<div id="chesschat">
 						<h2>Chat</h2>
-						<div id="chesschat_buffer">
+						<div id="chesschat_buffer" class="scroll-pane">
 
 						</div>
 						<input type="text" value="" id="chesschat_input" name="chesschat_input">
@@ -82,8 +92,10 @@ $route = new routing();
 	
 		</footer>
 	</div>
-	<script defer src="<?=$route->root?>js/libs/mootools-core-1.4.5-full-nocompat-yc.js"></script>
-	<script defer src="<?=$route->root?>js/libs/mootools-more-1.4.0.1.js"></script>
+	<script defer src="<?=$route->root?>js/libs/jquery-1.7.2.min.js"></script>
+	<script defer src="<?=$route->root?>js/mylibs/jquery.mousewheel.js"></script>
+	<script defer src="<?=$route->root?>js/mylibs/jquery.jscrollpane.min.js"></script>
+	<script defer src="<?=$route->root?>js/libs/angular-1.0.1.js"></script>
 	<script defer src="<?=$route->root?>js/libs/easeljs-0.4.1.min.js"></script>
 	<script defer src="<?=$route->root?>js/libs/tweenjs-0.2.0.min.js"></script>
 	<script defer src="<?=$route->root?>js/main.js"></script>
