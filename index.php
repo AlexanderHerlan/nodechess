@@ -22,7 +22,7 @@ $route = new routing();
    <!--[if lt IE 7]><p class=chromeframe>Your browser is extremely <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser now</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
     <div class="overlay" id="overlay" style="display:none;"></div>
     <div class="box" id="box">
-		<h1>Welcome!</h1>
+		<h1>Welcome to Node.js Chess!</h1>
 		<form id="frm_player_details" >
 			<p>Please choose a name: <input type="text" id="player_name"></p>
 			<p align="right"><button type="button" id="continue_player">Continue</button></p>
