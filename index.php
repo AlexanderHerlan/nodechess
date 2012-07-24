@@ -21,11 +21,11 @@ $route = new routing();
 <body>
    <!--[if lt IE 7]><p class=chromeframe>Your browser is extremely <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser now</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
     <div class="overlay" id="overlay" style="display:none;"></div>
-    <div class="box" id="box">
-		<h1>Welcome to Node.js Chess!</h1>
+    <div class="welcome_box" id="welcome_box">
+		<h1>Welcome to Chess!</h1>
 		<form id="frm_player_details" >
-			<p>Please choose a name: <input type="text" id="player_name"></p>
-			<p align="right"><button type="button" id="continue_player">Continue</button></p>
+			<p>Please choose a name: <span id="player_name_error"></span></p>
+			<p><input type="text" id="player_name"> <button type="button" id="continue_player">Continue</button></p>
 		</form>
 	</div>
 
@@ -69,7 +69,7 @@ $route = new routing();
 					<div id="chessinfo">
 						<h2>Game Info</h2>
 						<div id="chessinfo_pane">
-							<div id="chesschat_status">Choose a name in the chat box.</div>
+							<div id="chesschat_status">Initializing.</div>
 						</div>
 					</div>
 					<div id="chesshistory">

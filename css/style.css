@@ -387,18 +387,20 @@ li,ul {
     z-index:100;
 }
 
-.box{
-    position:fixed;
-    top:-200px;
-    left:30%;
-    right:30%;
+.welcome_box{
+    width:300px;
+    height:120px;
+    position:absolute;
+    left:50%;
+    top:-20%;
+    margin:-82px 0 0 -150px;
     background-color:#fff;
     color:#7F7F7F;
     padding:20px;
     border:1px solid #000;
-    -moz-border-radius: 20px;
-    -webkit-border-radius:20px;
-    -khtml-border-radius:20px;
+    -moz-border-radius: 16px;
+    -webkit-border-radius:16px;
+    -khtml-border-radius:16px;
     -moz-box-shadow: 0 1px 5px #333;
     -webkit-box-shadow: 0 1px 5px #333;
     z-index:101;
@@ -414,22 +416,33 @@ a.boxclose{
     cursor:pointer;
 }
 
-.box h1{
+.welcome_box h1{
     border-bottom: 1px dashed #7F7F7F;
+    text-align: center;
     margin:-20px -20px 0px -20px;
-    padding:10px;
+    padding:4px;
     background-color:#747f85;
     color:#ddd;
     -moz-border-radius:20px 20px 0px 0px;
-    -webkit-border-top-left-radius: 19px;
-    -webkit-border-top-right-radius: 19px;
-    -khtml-border-top-left-radius: 19px;
-    -khtml-border-top-right-radius: 19px;
+    -webkit-border-top-left-radius: 15px;
+    -webkit-border-top-right-radius: 15px;
+    -khtml-border-top-left-radius: 15px;
+    -khtml-border-top-right-radius: 15px;
 }
 
 
-
-
+#player_name {
+  width: 210px;
+}
+#player_name_error {
+  color: red;
+  font-size: 10px;
+}
+.chat_time {
+  font-size: 10px;
+  font-weight: bold;
+  color: #333;
+}
 
 /*
  * CSS Styles that are needed by jScrollPane for it to operate correctly.
@@ -457,7 +470,7 @@ a.boxclose{
   position: absolute;
   top: 0;
   right: 0;
-  width: 16px;
+  width: 14px;
   height: 100%;
 }
 
@@ -482,14 +495,15 @@ a.boxclose{
   display: none;
 }
 
-.jspHorizontalBar .jspCap
-{
+.jspHorizontalBar .jspCap {
   float: left;
 }
 
 .jspTrack
 {
-
+  border-left-width: 1px;
+  border-left-style: solid;
+  border-left-color: #000;
   position: relative;
 }
 

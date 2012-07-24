@@ -4,6 +4,12 @@ pieces.src = 'img/pieces.png';
 var canvas = document.getElementById('chesscanvas').getContext('2d');
 
 
+function hasWhiteSpace(s) {
+  return s.indexOf(' ') >= 0;
+}
+
+
+
 
 $(function () {
     "use strict";
@@ -38,7 +44,7 @@ $(function () {
     connection.onopen = function () {
         // first we want users to enter their names
         input.removeAttr('disabled');
-        status.text('Choose a name in the chat box.');
+        status.text('Initializing...');
     };
 
     connection.onerror = function (error) {
@@ -93,6 +99,11 @@ $(function () {
             // send the message as an ordinary text
             connection.send(msg);
             $(this).val('');
+
+
+            $('.scroll-pane').data('jsp').reinitialise();
+
+
             // disable the input field to make the user wait until server
             // sends back response
             input.attr('disabled', 'disabled');
@@ -126,29 +137,41 @@ $(function () {
 		showArrows: false,
 		hideFocus: true
 	};
-	var pane = $('.scroll-pane')
+	var pane = $('.scroll-pane');
 	pane.jScrollPane(settings);
 	var api = pane.data('jsp');
 
 
     function addMessage(author, message, color, dt) {
-        api.getContentPane().append('<p>' +
-             + (dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours()) + ':'
-             + (dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes())
-             + ' <span style="color:' + color + '">' + author + ':</span> ' + message + '</p>');
+        if(message.substring(0,4) == "/me ") {
+            api.getContentPane().append('<p><span class="chat_time">' +
+                 + (dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours()) + ':'
+                 + (dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes())
+                 + '</span> <span style="color:' + color + '">' + author + ' ' + message.substring(4) + '</span></p>');
+        } else {
+            api.getContentPane().append('<p><span class="chat_time">' +
+                 + (dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours()) + ':'
+                 + (dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes())
+                 + '</span> <span style="color:' + color + '">' + author + ':</span> ' + message + '</p>');
+        }
+
+
         api.reinitialise();
         api.scrollToBottom(false);
+        api.reinitialise();
     }
 
 
 
 
 	$('#overlay').fadeIn('fast',function(){
-        $('#box').animate({'top':'160px'},500);
+        $('#welcome_box').animate({'top':'50%'},500);
     });
 
+    $('#player_name').focus();
+
     $('#boxclose').click(function(){
-        $('#box').animate({'top':'-200px'},500,function(){
+        $('#welcome_box').animate({'top':'-200px'},500,function(){
             $('#overlay').fadeOut('fast');
         });
     });
@@ -162,19 +185,42 @@ $(function () {
     $('#frm_player_details').submit(function() {
 
         var player_name = $.trim($('#player_name').val());
-        if(player_name != "") {
+
+        //Player Name validation
+        if(player_name.length < 13 &&
+           player_name.length > 2 && 
+           hasWhiteSpace(player_name) == false &&
+           /\d+/.test(player_name) == false &&      //check for numerals
+           /^\w+$/.test(player_name) == true) {     //tests that the string is only a-z
         	connection.send(player_name);
         	// we know that the first message sent from a user their name
             if (myName === false) {
                 myName = player_name;
             }
-            $('#box').animate({'top':'-200px'},500,function(){
+            $('#welcome_box').animate({'top':'-20%'},400,function(){
                 $('#overlay').fadeOut('fast');
             });
+        } else {
+            if(player_name.length < 4) {
+                $('#player_name_error').html(" (At least 3 characters long)");
+                return false;
+            }
+            if(player_name.length > 12) {
+                $('#player_name_error').html(" (Shorter than 12 characters)");
+                return false;
+            }
+            if(hasWhiteSpace(player_name) == true) {
+                $('#player_name_error').html(" (With no white spaces)");
+                return false;
+            }
+            if(/\d+/.test(player_name) == true || /^\w+$/.test(player_name) == false) {
+                $('#player_name_error').html(" (That contains only a-z)");
+                return false;
+            }
         }
-
-		return false;
+        return false;
 	});
+
 
 });
 
