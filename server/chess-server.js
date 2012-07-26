@@ -28,15 +28,14 @@ var board = [BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, BL
              WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, 0, 0, 0, 0, 0, 0, 0, 0,
              WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK, 0, 0, 0, 0, 0, 0, 0, 0];
 
-
-             	function validateMove(from, to, currentPlayer){
-    return isPseudoLegal(from, to, currentPlayer) && checkAfterMove(from, to, currentPlayer);
-}
-
 exports.moveCount = moveCount;
 exports.board = board;
 
-exports.isPseudoLegal  = function ((from, to, currentPlayer)) {
+exports.validateMove = validateMove = function (from, to, currentPlayer) {
+    return isPseudoLegal(from, to, currentPlayer) && checkAfterMove(from, to, currentPlayer);
+}
+
+exports.isPseudoLegal = isPseudoLegal = function (from, to, currentPlayer) {
     
     var fromPiece = board[from];
     var toPiece = board[to];
@@ -134,9 +133,9 @@ exports.isPseudoLegal  = function ((from, to, currentPlayer)) {
     return true;
 }
 
-exports.makeMove = function(from, to) {
+exports.makeMove = makeMove = function(from, to) {
     var capturedPiece = board[to];
-    board[to] = board[from];
+    board[to] = board[fmakeMove= rom];
     board[from] = 0;
     
     log(board[from], board[to])
@@ -146,7 +145,7 @@ exports.makeMove = function(from, to) {
     return capturedPiece;
 }
 
-exports.unMakeMove = function(from, to, capturedPiece) {
+exports.unMakeMove = unMakeMove = function(from, to, capturedPiece) {
     board[from] = board[to];
     board[to] = capturedPiece;
     currentPlayer = (currentPlayer === 0) ? 8 : 0;
@@ -154,7 +153,7 @@ exports.unMakeMove = function(from, to, capturedPiece) {
     return true;
 }
 
-exports.checkAfterMove = function(from, to, currentPlayer) {
+exports.checkAfterMove = checkAfterMove = function(from, to, currentPlayer) {
     var capturedPiece = makeMove(from, to);
     
     /* Find my king */

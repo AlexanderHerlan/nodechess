@@ -1,12 +1,10 @@
 // http://ejohn.org/blog/ecmascript-5-strict-mode-json-and-more/
 "use strict";
 
-var chess = require('./chessgame.js');
-console.log("Board:");
-console.log(chess.board);
+var chess = require('./chess-server.js');
 
 // Optional. You will see this name in eg. 'ps' or 'top' command
-process.title = 'node-chat'; 
+process.title = 'node-chess'; 
 
 // Port where we'll run the websocket server
 var webSocketsServerPort = 1337;
@@ -74,6 +72,23 @@ wsServer.on('request', function(request) {
     if (history.length > 0) {
         connection.sendUTF(JSON.stringify( { type: 'history', data: history} ));
     }
+
+    connection.sendUTF(JSON.stringify({type: 'gameevent', data: chess.board}));
+
+    var test_board = chess.board;
+
+    setInterval(function(){ 
+        test_board[parseInt("16", 16)] = 0;
+        test_board[parseInt("36", 16)] = 0x09;
+        connection.sendUTF(JSON.stringify({type: 'gameevent', data: test_board}));
+
+        setTimeout(function(){ 
+            test_board[parseInt("16", 16)] = 0x09;
+            test_board[parseInt("36", 16)] = 0;
+            connection.sendUTF(JSON.stringify({type: 'gameevent', data: chess.board}));
+        }, 1500);
+    }, 3000);
+
 
     // user sent some message
     connection.on('message', function(message) {

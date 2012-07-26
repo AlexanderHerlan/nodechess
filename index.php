@@ -98,6 +98,7 @@ $route = new routing();
 	<script defer src="<?=$route->root?>js/libs/angular-1.0.1.js"></script>
 	<script defer src="<?=$route->root?>js/libs/easeljs-0.4.1.min.js"></script>
 	<script defer src="<?=$route->root?>js/libs/tweenjs-0.2.0.min.js"></script>
+	<script defer src="<?=$route->root?>server/chess-client.js"></script>
 	<script defer src="<?=$route->root?>js/main.js"></script>
 	<script>
 		window._gaq = [['_setAccount','UAXXXXXXXX1'],['_trackPageview'],['_trackPageLoadTime']];
