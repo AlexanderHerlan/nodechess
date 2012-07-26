@@ -1,8 +1,12 @@
 // http://ejohn.org/blog/ecmascript-5-strict-mode-json-and-more/
 "use strict";
 
+var chess = require('./chessgame.js');
+console.log("Board:");
+console.log(chess.board);
+
 // Optional. You will see this name in eg. 'ps' or 'top' command
-process.title = 'node-chat';
+process.title = 'node-chat'; 
 
 // Port where we'll run the websocket server
 var webSocketsServerPort = 1337;
