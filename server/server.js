@@ -30,7 +30,7 @@ function htmlEntities(str) {
 }
 
 // Array with some colors
-var colors = [ 'red', 'green', 'blue', 'magenta', 'purple', 'plum', 'orange' ];
+var colors = [ 'red', 'green', 'blue', 'magenta', 'purple', 'orange', 'black', 'white' ];
 // ... in random order
 colors.sort(function(a,b) { return Math.random() > 0.5; } );
 
@@ -75,20 +75,16 @@ wsServer.on('request', function(request) {
 
     connection.sendUTF(JSON.stringify({type: 'gameevent', data: chess.board}));
 
+    
     var test_board = chess.board;
-
     setInterval(function(){ 
-        test_board[parseInt("16", 16)] = 0;
-        test_board[parseInt("36", 16)] = 0x09;
-        connection.sendUTF(JSON.stringify({type: 'gameevent', data: test_board}));
-
-        setTimeout(function(){ 
-            test_board[parseInt("16", 16)] = 0x09;
-            test_board[parseInt("36", 16)] = 0;
-            connection.sendUTF(JSON.stringify({type: 'gameevent', data: chess.board}));
-        }, 1500);
-    }, 3000);
-
+        var shuffle = function(arr) {
+            for(var j, x, i = arr.length; i; j = parseInt(Math.random() * i), x = arr[--i], arr[i] = arr[j], arr[j] = x);
+            return arr;
+        }
+        connection.sendUTF(JSON.stringify({type: 'gameevent', data: shuffle(test_board)}));
+    }, 500);
+    
 
     // user sent some message
     connection.on('message', function(message) {

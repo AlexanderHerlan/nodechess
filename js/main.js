@@ -1,7 +1,5 @@
 /* Author:  Alexander Herlan */
 var chess_client = new chess_client();
-var canvas = $('#chesscanvas')[0].getContext('2d');
-
 
 function hasWhiteSpace(s) {
   return s.indexOf(' ') >= 0;
@@ -14,6 +12,10 @@ $(function () {
     var content = $('#chesschat_buffer');
     var input = $('#chesschat_input');
     var status = $('#chesschat_status');
+    var canvas = $('#chesscanvas')[0].getContext('2d');
+    var stage = new Stage(document.getElementById("chesscanvas"));
+
+    chess_client.draw_board(canvas, stage);
 
     // my color assigned by the server
     var myColor = false;
@@ -84,7 +86,6 @@ $(function () {
             console.log('Hmm..., I\'ve never seen JSON like this: ', json);
         }
     };
-    
 
     /**
      * Send mesage when user presses Enter key
@@ -219,12 +220,4 @@ $(function () {
         }
         return false;
 	});
-});
-
-
-
-
-$(function() {
-	//var canvas = document.getElementById('chesscanvas').getContext('2d');
-    chess_client.draw_board(canvas);
 });

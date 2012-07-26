@@ -4,18 +4,25 @@
 var chess_client = function () {
 	var that = this;
 
-	this.draw_board = function (canvas) {
+	this.draw_board = function (canvas, stage) {
 		var chessboard = new Image();   // Create new img element
 		chessboard.src = 'img/chessboard.png'; // Set source path
 		chessboard.onload = function(){
+			//chessboard = new Bitmap(chessboard);
+			//stage.addChild(chessboard);
+			//stage.update();
 			canvas.drawImage(chessboard,0,0,512,512);
 		};
 	}
 
 	this.draw_pieces = function(canvas, board) {
+		//reset the board behind the chess pieces. 
 		that.draw_board(canvas);
-		var sprite = new Image();
+
+		//set the size of each square on the board
 		var piece_size = 64;
+
+		var sprite = new Image();
 		sprite.src = 'img/pieces.png';
 
 		sprite.onload = function() {
@@ -68,4 +75,9 @@ var chess_client = function () {
 		}
 
 	}
+}
+
+
+function tick() {
+	stage.update();
 }
