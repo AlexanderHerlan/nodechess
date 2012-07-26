@@ -73,7 +73,7 @@ wsServer.on('request', function(request) {
         connection.sendUTF(JSON.stringify( { type: 'history', data: history} ));
     }
 
-    connection.sendUTF(JSON.stringify({type: 'gameevent', data: chess.board}));
+    connection.sendUTF(JSON.stringify({type: 'boardstate', data: chess.board}));
 
     
     var test_board = chess.board;
@@ -82,7 +82,7 @@ wsServer.on('request', function(request) {
             for(var j, x, i = arr.length; i; j = parseInt(Math.random() * i), x = arr[--i], arr[i] = arr[j], arr[j] = x);
             return arr;
         }
-        connection.sendUTF(JSON.stringify({type: 'gameevent', data: shuffle(test_board)}));
+        connection.sendUTF(JSON.stringify({type: 'boardstate', data: shuffle(test_board)}));
     }, 500);
     
 
@@ -135,4 +135,4 @@ wsServer.on('request', function(request) {
         }
     });
 
-});
+}); 

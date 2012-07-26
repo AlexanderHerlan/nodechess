@@ -80,7 +80,7 @@ $(function () {
             input.removeAttr('disabled'); // let the user write another message
             addMessage(json.data.author, json.data.text,
                        json.data.color, new Date(json.data.time));
-        } else if (json.type === 'gameevent') {
+        } else if (json.type === 'boardstate') {
             chess_client.draw_pieces(canvas, json.data);
         } else {
             console.log('Hmm..., I\'ve never seen JSON like this: ', json);
