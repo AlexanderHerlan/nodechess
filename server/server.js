@@ -21,12 +21,17 @@ var history = [ ];
 // list of currently connected clients (users)
 var clients = [ ];
 
+var connection;
 /**
  * Helper function for escaping input strings
  */
 function htmlEntities(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;')
                       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function shuffle(arr) {
+    for(var j, x, i = arr.length; i; j = parseInt(Math.random() * i), x = arr[--i], arr[i] = arr[j], arr[j] = x);
+    return arr;
 }
 
 // Array with some colors
@@ -74,18 +79,7 @@ wsServer.on('request', function(request) {
     }
 
     connection.sendUTF(JSON.stringify({type: 'boardstate', data: chess.board}));
-
-    
-    var test_board = chess.board;
-    setInterval(function(){ 
-        var shuffle = function(arr) {
-            for(var j, x, i = arr.length; i; j = parseInt(Math.random() * i), x = arr[--i], arr[i] = arr[j], arr[j] = x);
-            return arr;
-        }
-        connection.sendUTF(JSON.stringify({type: 'boardstate', data: shuffle(test_board)}));
-    }, 500);
-    
-
+ 
     // user sent some message
     connection.on('message', function(message) {
         if (message.type === 'utf8') { // accept only text
@@ -136,3 +130,10 @@ wsServer.on('request', function(request) {
     });
 
 }); 
+
+setInterval(function(){
+    var testboard = shuffle(chess.board);
+    for (var i=0; i < clients.length; i++) {
+        clients[i].sendUTF(JSON.stringify({type: 'boardstate', data: chess.board}));
+    }
+}, 1000);
