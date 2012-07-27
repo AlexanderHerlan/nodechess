@@ -218,6 +218,6 @@ $(function () {
                 return false;
             }
         }
-        return false;
+        return false; // keep the page from refreshing on submit()
 	});
 });

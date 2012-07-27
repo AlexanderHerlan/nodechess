@@ -131,9 +131,11 @@ wsServer.on('request', function(request) {
 
 }); 
 
+/*
 setInterval(function(){
     var testboard = shuffle(chess.board);
     for (var i=0; i < clients.length; i++) {
         clients[i].sendUTF(JSON.stringify({type: 'boardstate', data: chess.board}));
     }
 }, 1000);
+*/
