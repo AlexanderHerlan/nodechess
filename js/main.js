@@ -1,5 +1,8 @@
 /* Author:  Alexander Herlan */
 var chess_client = new chess_client();
+var canvas = document.getElementById("chesscanvas");
+var stage = new Stage(canvas);
+
 var chess_board;
 var stage;
 
@@ -15,7 +18,6 @@ $(function () {
     var content = $('#chesschat_buffer');
     var input = $('#chesschat_input');
     var status = $('#current_player_status');
-    var canvas = $('#chesscanvas')[0].getContext('2d');
     
     //chess_client.draw_board(canvas, stage);
 
@@ -43,7 +45,7 @@ $(function () {
     connection.onopen = function () {
         // first we want users to enter their names
         input.removeAttr('disabled');
-        status.text('Initializing...');
+        //status.text('Initializing...');
         //load old player profile if one exists
         if(!$.cookie("player_name")) {
             $('#overlay').fadeIn('fast',function(){
@@ -59,7 +61,14 @@ $(function () {
         } else {
             myName = $.cookie("player_name");
             //connection.send(myName);
-            setTimeout(function() { connection.send(myName); }, 200)
+            var user_config_obj = {
+                type: 'userconfig',
+                player_name: myName
+            }
+
+            user_config_obj = JSON.stringify(user_config_obj);
+
+            setTimeout(function() { connection.send(user_config_obj); }, 200);
         }
     };
 
@@ -85,7 +94,7 @@ $(function () {
         // check the server source code above
         if (json.type === 'color') { // first response from the server with user's color
             myColor = json.data;
-            status.html('Playing as: <span style="color:' + myColor + '">' + myName + "</span>");
+            //status.html('Playing as: <span style="color:' + myColor + '">' + myName + "</span>");
             input.removeAttr('disabled').focus();
             // from now user can start sending messages
         } else if (json.type === 'history') { // entire message history
@@ -99,9 +108,7 @@ $(function () {
             addMessage(json.data.author, json.data.text,
                        json.data.color, new Date(json.data.time));
         } else if (json.type === 'boardstate') {
-            //chess_client.draw_pieces(canvas, json.data);
-            chess_board = json.data;
-            console.log(json.data);
+            chess_client.draw_pieces(stage, json.data);
         } else {
             console.log('Unknown server response: ', json);
         }
@@ -116,8 +123,16 @@ $(function () {
             if (!msg) {
                 return;
             }
+
+            var msg_obj = {
+                type: 'message',
+                message: msg
+            }
+
+            msg_obj = JSON.stringify(msg_obj);
             // send the message as an ordinary text
-            connection.send(msg);
+
+            connection.send(msg_obj);
             $(this).val('');
 
 
@@ -202,7 +217,16 @@ $(function () {
            /\d+/.test(player_name) == false &&      //check for numerals
            /^\w+$/.test(player_name) == true) {     //tests that the string is only a-z
         	
-            connection.send(player_name);
+
+            var user_config_obj = {
+                type: 'userconfig',
+                player_name: player_name
+            }
+
+            user_config_obj = JSON.stringify(user_config_obj);
+
+            connection.send(user_config_obj);
+
         	// we know that the first message sent from a user their name
             if (myName === false) {
                 myName = player_name;
@@ -233,7 +257,6 @@ $(function () {
 
 	});
 
-
 });
 
 
@@ -242,27 +265,24 @@ $(function () {
 var board_img;
 
 function init() {
-    canvas = document.getElementById("chesscanvas");
-
-    stage = new Stage(document.getElementById("chesscanvas"));
-
-    Ticker.setFPS(60);
+    Ticker.setFPS(30);
     Ticker.addListener(this);
 
-    board_img = new Image();
-    board_img.src = 'img/chessboard.png';
-    board_img.onload = load_chessboard;
-
-    chess_client.draw_pieces(stage, chess_board);
-}
-
-function load_chessboard() {
-    var board = new Bitmap(board_img);
-    stage.addChild(board);
-    stage.update();
+    chess_client.draw_board(stage);
 }
 
 function tick() {
     //re-render the stage
     stage.update();
 }
+
+
+
+// AngularJS stuff
+function GameInfoCtrl($scope) {
+    $scope.player_name = "connecting..."
+}
+
+
+
+var gameinfo_module = angular.module('gameInfo', []);

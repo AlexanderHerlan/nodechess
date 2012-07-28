@@ -83,24 +83,28 @@ wsServer.on('request', function(request) {
     // user sent some message
     connection.on('message', function(message) {
         if (message.type === 'utf8') { // accept only text
+
+            //msg convert
+            var json = JSON.parse(message.utf8Data);
+
             if (userName === false) { // first message sent by user is their name
                 // remember user name
-                console.log(message.utf8Data.toString());
-                userName = htmlEntities(message.utf8Data.toString());
+                
+                userName = json.player_name;
                 // get random color and send it back to the user
                 userColor = colors.shift();
                 connection.sendUTF(JSON.stringify({ type:'color', data: userColor }));
                 console.log((new Date()) + ' User is known as: ' + userName
                             + ' with ' + userColor + ' color.');
 
-            } else { // log and broadcast the message
+            } else if (json.type == "message") {
                 console.log((new Date()) + ' Received Message from '
-                            + userName + ': ' + message.utf8Data);
-                
+                            + userName + ': ' + json.message);
+
                 // we want to keep history of all sent messages
                 var obj = {
                     time: (new Date()).getTime(),
-                    text: htmlEntities(message.utf8Data),
+                    text: json.message,
                     author: userName,
                     color: userColor
                 };
@@ -112,6 +116,8 @@ wsServer.on('request', function(request) {
                 for (var i=0; i < clients.length; i++) {
                     clients[i].sendUTF(json);
                 }
+            } else { // log and broadcast the message
+                console.log("Unrecognized client message.");
             }
         }
     });
@@ -131,6 +137,8 @@ wsServer.on('request', function(request) {
     });
 
 }); 
+
+
 
 /*
 setInterval(function(){

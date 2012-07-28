@@ -3,19 +3,24 @@
 
 var chess_client = function () {
 	var that = this;
+	var chess_board;
 
-	this.draw_board = function (canvas, stage) {
+	this.draw_board = function (stage) {
 		var chessboard = new Image();   // Create new img element
 		chessboard.src = 'img/chessboard.png'; // Set source path
 		chessboard.onload = function(){
+			var board = new Bitmap(chessboard);
+		    stage.addChild(board);
+		    stage.update();
 			//chessboard = new Bitmap(chessboard);
 			//stage.addChild(chessboard);
 			//stage.update();
-			canvas.drawImage(chessboard,0,0,512,512);
+			//canvas.drawImage(chessboard,0,0,512,512);
 		};
+
 	}
 
-	this.draw_pieces = function(stage, board) {
+	this.draw_pieces = function(stage, chessboard) {
 		//reset the board behind the chess pieces. 
 		//that.draw_board(canvas);
 
@@ -25,14 +30,13 @@ var chess_client = function () {
 		var sprite = new Image();
 		sprite.src = 'img/pieces.png';
 		sprite.onload=function() {
+			
 		    var pieces = new Bitmap(sprite);
-		    stage.addChild(pieces);
-		    stage.update();
 
-			for (var i = 0; i < board.length; i++) {
+			for (var i = 0; i < chessboard.length; i++) {
 
-				piece = board[i];
-				piece_hex = board[i];
+				piece = chessboard[i];
+				piece_hex = chessboard[i];
 				if(piece < 10) {
 					piece = "0" + piece; 
 				}
@@ -71,11 +75,19 @@ var chess_client = function () {
 			    }
 
 			    if(piece_hex != 0) {
+			    	var pieces_crop = new Rectangle ( sprite_x , color , piece_size , piece_size );
+			    	pieces.x = column;
+				    pieces.y = row;
+				    pieces.sourceRect = pieces_crop;
+				    stage.addChild(pieces);
 			    	//canvas.drawImage(sprite, sprite_piece, color, piece_size, piece_size, column, row, piece_size, piece_size); 
 			    }
+			    stage.update();
 				
 			}
+			
 		}
+		
 
 	}
 }
