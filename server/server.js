@@ -85,7 +85,8 @@ wsServer.on('request', function(request) {
         if (message.type === 'utf8') { // accept only text
             if (userName === false) { // first message sent by user is their name
                 // remember user name
-                userName = htmlEntities(message.utf8Data);
+                console.log(message.utf8Data.toString());
+                userName = htmlEntities(message.utf8Data.toString());
                 // get random color and send it back to the user
                 userColor = colors.shift();
                 connection.sendUTF(JSON.stringify({ type:'color', data: userColor }));

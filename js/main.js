@@ -1,5 +1,8 @@
 /* Author:  Alexander Herlan */
 var chess_client = new chess_client();
+var chess_board;
+var stage;
+
 
 function hasWhiteSpace(s) {
   return s.indexOf(' ') >= 0;
@@ -11,11 +14,10 @@ $(function () {
     // for better performance - to avoid searching in DOM
     var content = $('#chesschat_buffer');
     var input = $('#chesschat_input');
-    var status = $('#chesschat_status');
+    var status = $('#current_player_status');
     var canvas = $('#chesscanvas')[0].getContext('2d');
-    var stage = new Stage(document.getElementById("chesscanvas"));
-
-    chess_client.draw_board(canvas, stage);
+    
+    //chess_client.draw_board(canvas, stage);
 
     // my color assigned by the server
     var myColor = false;
@@ -35,7 +37,6 @@ $(function () {
     }
 
 
-
     // open connection
     var connection = new WebSocket('ws://www.snakebyte.net:1337');
 
@@ -43,6 +44,23 @@ $(function () {
         // first we want users to enter their names
         input.removeAttr('disabled');
         status.text('Initializing...');
+        //load old player profile if one exists
+        if(!$.cookie("player_name")) {
+            $('#overlay').fadeIn('fast',function(){
+                $('#msg_box').animate({'top':'50%'},500);
+            });
+
+            $('#player_name').focus();
+
+            $('#continue_player').click(function(){
+                $('#frm_player_details').submit();
+                return false;
+            }); 
+        } else {
+            myName = $.cookie("player_name");
+            //connection.send(myName);
+            setTimeout(function() { connection.send(myName); }, 200)
+        }
     };
 
     connection.onerror = function (error) {
@@ -81,9 +99,11 @@ $(function () {
             addMessage(json.data.author, json.data.text,
                        json.data.color, new Date(json.data.time));
         } else if (json.type === 'boardstate') {
-            chess_client.draw_pieces(canvas, json.data);
+            //chess_client.draw_pieces(canvas, json.data);
+            chess_board = json.data;
+            console.log(json.data);
         } else {
-            console.log('Hmm..., I\'ve never seen JSON like this: ', json);
+            console.log('Unknown server response: ', json);
         }
     };
 
@@ -122,9 +142,18 @@ $(function () {
      */
     setInterval(function() {
         if (connection.readyState !== 1) {
-            status.text('Error');
-            input.attr('disabled', 'disabled').val('Unable to comminucate '
-                                                 + 'with the WebSocket server.');
+            input.attr('disabled', 'disabled');
+
+            $('#msg_box').removeClass("welcome_box");
+            $('#msg_box').addClass("error_box");
+            $('#msg_box_title').html("Error");
+            $('#msg_box_body').html('<p>The server appears to be down.<p><p><button id="reconnect">Reconnect</button>');
+            $('#reconnect').click(function(){
+                window.location = '.';
+            }); 
+            $('#msg_box').animate({'top':'50%'},400,function(){
+                $('#overlay').fadeIn('fast');
+            });
         }
     }, 3000);
 
@@ -162,26 +191,6 @@ $(function () {
     }
 
 
-
-
-	$('#overlay').fadeIn('fast',function(){
-        $('#welcome_box').animate({'top':'50%'},500);
-    });
-
-    $('#player_name').focus();
-
-    $('#boxclose').click(function(){
-        $('#welcome_box').animate({'top':'-200px'},500,function(){
-            $('#overlay').fadeOut('fast');
-        });
-    });
-
-
-    $('#continue_player').click(function(){
-        $('#frm_player_details').submit();
-    	return false;
-    });	
-
     $('#frm_player_details').submit(function() {
 
         var player_name = $.trim($('#player_name').val());
@@ -192,19 +201,17 @@ $(function () {
            hasWhiteSpace(player_name) == false &&
            /\d+/.test(player_name) == false &&      //check for numerals
            /^\w+$/.test(player_name) == true) {     //tests that the string is only a-z
-        	connection.send(player_name);
+        	
+            connection.send(player_name);
         	// we know that the first message sent from a user their name
             if (myName === false) {
                 myName = player_name;
+                $.cookie("player_name", player_name, { expires: 1 });
             }
-            $('#welcome_box').animate({'top':'-20%'},400,function(){
+            $('#msg_box').animate({'top':'-20%'},400,function(){
                 $('#overlay').fadeOut('fast');
             });
         } else {
-            if(player_name.length < 4) {
-                $('#player_name_error').html(" (At least 3 characters long)");
-                return false;
-            }
             if(player_name.length > 12) {
                 $('#player_name_error').html(" (Shorter than 12 characters)");
                 return false;
@@ -217,7 +224,45 @@ $(function () {
                 $('#player_name_error').html(" (That contains only a-z)");
                 return false;
             }
+            if(player_name.length < 4) {
+                $('#player_name_error').html(" (At least 3 characters long)");
+                return false;
+            }
         }
         return false; // keep the page from refreshing on submit()
+
 	});
+
+
 });
+
+
+
+// Initialize EaselJS stuff
+var board_img;
+
+function init() {
+    canvas = document.getElementById("chesscanvas");
+
+    stage = new Stage(document.getElementById("chesscanvas"));
+
+    Ticker.setFPS(60);
+    Ticker.addListener(this);
+
+    board_img = new Image();
+    board_img.src = 'img/chessboard.png';
+    board_img.onload = load_chessboard;
+
+    chess_client.draw_pieces(stage, chess_board);
+}
+
+function load_chessboard() {
+    var board = new Bitmap(board_img);
+    stage.addChild(board);
+    stage.update();
+}
+
+function tick() {
+    //re-render the stage
+    stage.update();
+}

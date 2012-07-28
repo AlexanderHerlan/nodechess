@@ -301,7 +301,7 @@ li,ul {
 }
 #chessinfo_pane {
   width: 300px;
-  height: 93px;
+  height: 126px;
   margin-left: 10px;
   padding-left: 4px;
   padding-right: 4px;
@@ -316,13 +316,13 @@ li,ul {
   position: absolute;
   width: 320px;
   height: 192px;
-  margin-top: -389px;
+  margin-top: -356px;
   margin-left: 512px;
 
 }
-#chathistory_buffer {
+#chesshistory_buffer {
   width: 300px;
-  height: 157px;
+  height: 120px;
   margin-left: 10px;
   padding-left: 4px;
   padding-bottom: 4px;
@@ -368,9 +368,8 @@ li,ul {
   border-color: black;
   border-width: 1px;
 }
-#chesschat_status {
-  padding-top: 20px;
-  text-align: center;
+#current_player_status {
+  padding: 5px;
   width: 300px;
   font-size: 12px;
 }
@@ -387,7 +386,29 @@ li,ul {
     z-index:100;
 }
 
+#msg_box {
+    -moz-border-radius: 16px;
+    -webkit-border-radius:16px;
+    -khtml-border-radius:16px;
+    -moz-box-shadow: 0 1px 5px #333;
+    -webkit-box-shadow: 0 1px 5px #333;
+    z-index:101;
+    border:1px solid #000;
+    position:absolute;
+}
+
 .welcome_box{
+    width:300px;
+    height:120px;
+    left:50%;
+    top:-20%;
+    margin:-82px 0 0 -150px;
+    background-color:#fff;
+    color:#7F7F7F;
+    padding:20px;
+
+}
+.error_box{
     width:300px;
     height:120px;
     position:absolute;
@@ -397,13 +418,7 @@ li,ul {
     background-color:#fff;
     color:#7F7F7F;
     padding:20px;
-    border:1px solid #000;
-    -moz-border-radius: 16px;
-    -webkit-border-radius:16px;
-    -khtml-border-radius:16px;
-    -moz-box-shadow: 0 1px 5px #333;
-    -webkit-box-shadow: 0 1px 5px #333;
-    z-index:101;
+    text-align: center;
 }
 
 a.boxclose{
@@ -416,7 +431,7 @@ a.boxclose{
     cursor:pointer;
 }
 
-.welcome_box h1{
+#msg_box h1{
     border-bottom: 1px dashed #7F7F7F;
     text-align: center;
     margin:-20px -20px 0px -20px;

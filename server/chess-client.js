@@ -15,17 +15,20 @@ var chess_client = function () {
 		};
 	}
 
-	this.draw_pieces = function(canvas, board) {
+	this.draw_pieces = function(stage, board) {
 		//reset the board behind the chess pieces. 
-		that.draw_board(canvas);
+		//that.draw_board(canvas);
 
 		//set the size of each square on the board
 		var piece_size = 64;
 
 		var sprite = new Image();
 		sprite.src = 'img/pieces.png';
+		sprite.onload=function() {
+		    var pieces = new Bitmap(sprite);
+		    stage.addChild(pieces);
+		    stage.update();
 
-		sprite.onload = function() {
 			for (var i = 0; i < board.length; i++) {
 
 				piece = board[i];
@@ -54,21 +57,21 @@ var chess_client = function () {
 				column = Number(column) * piece_size;
 
 				if((piece_hex & 0x07) === 0x07){ // queen
-					var sprite_piece = 64;
+					var sprite_x = 64;
 				}else if((piece_hex & 0x06) === 0x06){ // rook
-					var sprite_piece = 256;
+					var sprite_x = 256;
 			    }else if((piece_hex & 0x05) === 0x05){ // bishop
-			    	var sprite_piece = 128;
+			    	var sprite_x = 128;
 			    }else if((piece_hex & 0x03) === 0x03){ // king
-			    	var sprite_piece = 0;
+			    	var sprite_x = 0;
 			    }else if((piece_hex & 0x02) === 0x02){ // knight
-			    	var sprite_piece = 192;
+			    	var sprite_x = 192;
 			    }else if((piece_hex & 0x01) === 0x01){ // pawn
-			    	var sprite_piece = 320; 
+			    	var sprite_x = 320; 
 			    }
 
 			    if(piece_hex != 0) {
-			    	canvas.drawImage(sprite, sprite_piece, color, piece_size, piece_size, column, row, piece_size, piece_size); 
+			    	//canvas.drawImage(sprite, sprite_piece, color, piece_size, piece_size, column, row, piece_size, piece_size); 
 			    }
 				
 			}

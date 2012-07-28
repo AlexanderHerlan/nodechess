@@ -18,15 +18,17 @@ $route = new routing();
 	<script src="<?=$route->root?>js/libs/modernizr-2.5.3.min.js"></script>
 </head>
 
-<body>
+<body onload="init()">
    <!--[if lt IE 7]><p class=chromeframe>Your browser is extremely <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser now</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
     <div class="overlay" id="overlay" style="display:none;"></div>
-    <div class="welcome_box" id="welcome_box">
-		<h1>Welcome to Chess!</h1>
-		<form id="frm_player_details" >
-			<p>Please choose a name: <span id="player_name_error"></span></p>
-			<p><input type="text" id="player_name"> <button type="button" id="continue_player">Continue</button></p>
-		</form>
+    <div class="welcome_box" id="msg_box">
+		<h1 id="msg_box_title">Welcome to Chess!</h1>
+		<div id="msg_box_body">
+			<form id="frm_player_details" >
+				<p>Please choose a player name: <span id="player_name_error"></span></p>
+				<p><input type="text" id="player_name"> <button type="button" id="continue_player">Continue</button></p>
+			</form>
+		</div>
 	</div>
 
 
@@ -69,12 +71,14 @@ $route = new routing();
 					<div id="chessinfo">
 						<h2>Game Info</h2>
 						<div id="chessinfo_pane">
-							<div id="chesschat_status">Initializing.</div>
+							<div id="current_player_status">Initializing.</div>
+							<div id="players_list"></div>
+							<div id="spectators_list"></div>
 						</div>
 					</div>
 					<div id="chesshistory">
 						<h2>History</h2>
-						<div id="chathistory_buffer">
+						<div id="chesshistory_buffer">
 
 						</div>
 					</div>
@@ -95,6 +99,7 @@ $route = new routing();
 	<script defer src="<?=$route->root?>js/libs/jquery-1.7.2.min.js"></script>
 	<script defer src="<?=$route->root?>js/mylibs/jquery.mousewheel.js"></script>
 	<script defer src="<?=$route->root?>js/mylibs/jquery.jscrollpane.min.js"></script>
+	<script defer src="<?=$route->root?>js/mylibs/jquery.cookie.js"></script>
 	<script defer src="<?=$route->root?>js/libs/angular-1.0.1.js"></script>
 	<script defer src="<?=$route->root?>js/libs/easeljs-0.4.2.min.js"></script>
 	<script defer src="<?=$route->root?>js/libs/tweenjs-0.2.0.min.js"></script>
