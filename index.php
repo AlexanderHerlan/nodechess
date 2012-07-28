@@ -7,7 +7,7 @@ $route = new routing();
 <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
 <!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
 <!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" ng-app> <!--<![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
 <head>
 	<meta charset="utf-8">
 	<title>Multiplayer Chess</title>
@@ -68,10 +68,10 @@ $route = new routing();
 
 				</canvas>
 				<div id="chesssidebar">
-					<div id="chessinfo" ng:controller="GameInfoCtrl">
+					<div id="chessinfo">
 						<h2>Game Info</h2>
 						<div id="chessinfo_pane">
-							<div id="current_player_status">Playing as: {{player_name}}</div>
+							<div id="current_player_status">Initializing</div>
 							<div id="players_list"></div>
 							<div id="spectators_list"></div>
 						</div>

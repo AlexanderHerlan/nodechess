@@ -2,6 +2,7 @@
 var chess_client = new chess_client();
 var canvas = document.getElementById("chesscanvas");
 var stage = new Stage(canvas);
+var connection;
 
 var chess_board;
 var stage;
@@ -40,12 +41,12 @@ $(function () {
 
 
     // open connection
-    var connection = new WebSocket('ws://www.snakebyte.net:1337');
+    connection = new WebSocket('ws://www.snakebyte.net:1337');
 
     connection.onopen = function () {
         // first we want users to enter their names
         input.removeAttr('disabled');
-        //status.text('Initializing...');
+        status.text('Initializing...');
         //load old player profile if one exists
         if(!$.cookie("player_name")) {
             $('#overlay').fadeIn('fast',function(){
@@ -94,7 +95,7 @@ $(function () {
         // check the server source code above
         if (json.type === 'color') { // first response from the server with user's color
             myColor = json.data;
-            //status.html('Playing as: <span style="color:' + myColor + '">' + myName + "</span>");
+            status.html('Playing as: <span style="color:' + myColor + '">' + myName + "</span>");
             input.removeAttr('disabled').focus();
             // from now user can start sending messages
         } else if (json.type === 'history') { // entire message history
@@ -275,14 +276,3 @@ function tick() {
     //re-render the stage
     stage.update();
 }
-
-
-
-// AngularJS stuff
-function GameInfoCtrl($scope) {
-    $scope.player_name = "connecting..."
-}
-
-
-
-var gameinfo_module = angular.module('gameInfo', []);
