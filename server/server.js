@@ -1,41 +1,89 @@
 // http://ejohn.org/blog/ecmascript-5-strict-mode-json-and-more/
 "use strict";
 
-var chess = require('./chess-server.js');
-
-// Optional. You will see this name in eg. 'ps' or 'top' command
+// Process name that shows up in Linux. You will see this name in eg. 'ps' or 'top' command
 process.title = 'node-chess'; 
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Required Modules
+//////////////////////////////////////////////////////////////////////////////////////////////
+var http = require('http');
+var chess = require('./chess-server.js');
+var webSocketServer = require('websocket').server;
+var io = require('socket.io');
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Global variables
+//////////////////////////////////////////////////////////////////////////////////////////////
 
 // Port where we'll run the websocket server
 var webSocketsServerPort = 1337;
-
-// websocket and http servers
-var webSocketServer = require('websocket').server;
-var http = require('http');
-
-/**
- * Global variables
- */
 // latest 100 messages
 var history = [ ];
 // list of currently connected clients (users)
 var clients = [ ];
-
+//websockets connection
 var connection;
-/**
- * Helper function for escaping input strings
- */
+// http webserver to facilitate the websockets connection
+var webserver;
+// Available player colors
+var colors = [ 'red', 'green', 'blue', 'magenta', 'purple', 'orange', 'black', 'white' ];
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Helper functions
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+//Helper function for escaping input strings
 function htmlEntities(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;')
                       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
+
+//Helper function for shuffling an array
 function shuffle(arr) {
     for(var j, x, i = arr.length; i; j = parseInt(Math.random() * i), x = arr[--i], arr[i] = arr[j], arr[j] = x);
     return arr;
 }
 
-// Array with some colors
-var colors = [ 'red', 'green', 'blue', 'magenta', 'purple', 'orange', 'black', 'white' ];
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Socket.io stuff
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+//start HTTP server
+webserver = http.createServer(webserver_handler);
+webserver.listen(8080);
+
+//handle HTTP server requests
+function webserver_handler(req, res) { 
+    // Send HTML headers and message
+    res.writeHead(200,{ 'Content-Type': 'text/html' }); 
+    res.end('<h1>Hello Socket Lover!</h1>');
+}
+
+io.sockets.on('connection', function (socket) {
+    socket.emit('news', { hello: 'world' });
+
+    socket.on('my other event', function (data) {
+    console.log(data);
+    });
+});
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// App Entry Point:
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
 // ... in random order
 colors.sort(function(a,b) { return Math.random() > 0.5; } );
 
