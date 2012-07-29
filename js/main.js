@@ -1,17 +1,33 @@
-/* Author:  Alexander Herlan */
+//////////////////////////////////////////////////////////////////////////////////////////////
+//
+//  Node Chess client by Alexander Herlan.
+//
+//////////////////////////////////////////////////////////////////////////////////////////////
 var chess_client = new chess_client();
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Global variables
+//////////////////////////////////////////////////////////////////////////////////////////////
 var canvas = document.getElementById("chesscanvas");
 var stage = new Stage(canvas);
 var connection;
-
 var chess_board;
 var stage;
 
+//socket.io
+var socket;
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Helper functions
+//////////////////////////////////////////////////////////////////////////////////////////////
 function hasWhiteSpace(s) {
   return s.indexOf(' ') >= 0;
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// App Entry Point:
+//////////////////////////////////////////////////////////////////////////////////////////////
 $(function () {
     "use strict";
 
@@ -20,34 +36,19 @@ $(function () {
     var input = $('#chesschat_input');
     var status = $('#current_player_status');
     
-    //chess_client.draw_board(canvas, stage);
-
     // my color assigned by the server
     var myColor = false;
     // my name sent to the server
     var myName = false;
 
-    // if user is running mozilla then use it's built-in WebSocket
-    window.WebSocket = window.WebSocket || window.MozWebSocket;
+    // connect to socket.io server
+    socket = io.connect('http://snakebyte.net:6969');
 
-    // if browser doesn't support WebSocket, just show some notification and exit
-    if (!window.WebSocket) {
-        content.html($('<p>', { text: 'Sorry, but your browser doesn\'t '
-                                    + 'support WebSockets.'} ));
-        input.hide();
-        $('span').hide();
-        return;
-    }
-
-
-    // open connection
-    connection = new WebSocket('ws://www.snakebyte.net:1337');
-
-    connection.onopen = function () {
-        // first we want users to enter their names
-        input.removeAttr('disabled');
+    socket.on('connect', function () {
+        
+        // first we want users to establish the user's name
         status.text('Initializing...');
-        //load old player profile if one exists
+
         if(!$.cookie("player_name")) {
             $('#overlay').fadeIn('fast',function(){
                 $('#msg_box').animate({'top':'50%'},500);
@@ -61,63 +62,71 @@ $(function () {
             }); 
         } else {
             myName = $.cookie("player_name");
-            //connection.send(myName);
-            var user_config_obj = {
-                type: 'userconfig',
-                player_name: myName
-            }
-
-            user_config_obj = JSON.stringify(user_config_obj);
-
-            setTimeout(function() { connection.send(user_config_obj); }, 200);
-        }
-    };
-
-    connection.onerror = function (error) {
-        // just in there were some problems with conenction...
-        content.html($('<p>', { text: 'Sorry, but there\'s some problem with your '
-                                    + 'connection or the server is down.</p>' } ));
-    };
-
-    // most important part - incoming messages
-    connection.onmessage = function (message) {
-        // try to parse JSON message. Because we know that the server always returns
-        // JSON this should work without any problem but we should make sure that
-        // the massage is not chunked or otherwise damaged.
-        try {
-            var json = JSON.parse(message.data);
-        } catch (e) {
-            console.log('This doesn\'t look like a valid JSON: ', message.data);
-            return;
+            socket.emit('userconfig', { player_name: myName });
+            input.removeAttr('disabled');
         }
 
-        // NOTE: if you're not sure about the JSON structure
-        // check the server source code above
-        if (json.type === 'color') { // first response from the server with user's color
-            myColor = json.data;
-            status.html('Playing as: <span style="color:' + myColor + '">' + myName + "</span>");
-            input.removeAttr('disabled').focus();
-            // from now user can start sending messages
-        } else if (json.type === 'history') { // entire message history
-            // insert every single message to the chat window
-            for (var i=0; i < json.data.length; i++) {
-                addMessage(json.data[i].author, json.data[i].text,
-                           json.data[i].color, new Date(json.data[i].time));
-            }
-        } else if (json.type === 'message') { // it's a single message
-            input.removeAttr('disabled'); // let the user write another message
-            addMessage(json.data.author, json.data.text,
-                       json.data.color, new Date(json.data.time));
-        } else if (json.type === 'boardstate') {
-            chess_client.draw_pieces(stage, json.data);
-        } else {
-            console.log('Unknown server response: ', json);
+        console.log("Connected to Chess server.");
+    });
+    socket.on('boardstate', function (board) {
+        console.log("boardstate: ");
+        console.log(board);
+        chess_client.draw_pieces(stage, board.data);
+    });
+    socket.on('userinfo', function(data){
+        console.log("userinfo: ");
+        console.log(data);
+        status.html('Playing as: <span style="color:' + data.color + '">' + data.name + '</span>');
+        input.removeAttr('disabled').focus();
+    });
+    socket.on('chathistory', function (history) {
+        console.log("chathistory: ");
+        console.log(history);
+        // insert every single message to the chat window
+        for (var i=0; i < history.data.length; i++) {
+            addMessage(history.data[i].author, history.data[i].text,
+                       history.data[i].color, new Date(history.data[i].time));
         }
-    };
+    });
+    socket.on('chatmessage', function (message) {
+        console.log(message);
+        input.removeAttr('disabled'); // let the user write another message
+        addMessage(message.data.author, message.data.text,message.data.color, new Date(message.data.time));
+ 
+    });
+    socket.on('error', function () {
+        console.log("Error: disconnected to server");
+    });
+    socket.on('disconnect', function () {
+        console.log("Error: disconnected to server");
+        input.attr('disabled', 'disabled');
 
-    /**
-     * Send mesage when user presses Enter key
-     */
+        $('#msg_box').removeClass("welcome_box");
+        $('#msg_box').addClass("error_box");
+        $('#msg_box_title').html("Error");
+        $('#msg_box_body').html('<p>The server appears to be down.<p><p><button id="reconnect">Reconnect</button>');
+        $('#reconnect').click(function(){
+            window.location = '.';
+        }); 
+        $('#msg_box').animate({'top':'50%'},400,function(){
+            $('#overlay').fadeIn('fast');
+        });
+    });
+    socket.on('reconnect', function () {
+        $('#msg_box').animate({'top':'-20%'},400,function(){
+            $('#overlay').fadeOut('fast');
+        });
+    });
+
+    // if browser doesn't support WebSocket, just show some notification and exit
+    if (!window.WebSocket) {
+        content.html($('<p>', { text: 'Sorry, but your browser doesn\'t '
+                                    + 'support WebSockets.'} ));
+        input.hide();
+        return;
+    }
+
+    //Send mesage when user presses Enter key
     input.keydown(function(e) {
         if (e.keyCode === 13) {
             var msg = $(this).val();
@@ -125,15 +134,8 @@ $(function () {
                 return;
             }
 
-            var msg_obj = {
-                type: 'message',
-                message: msg
-            }
+            socket.emit('chatmessage', {text: msg});
 
-            msg_obj = JSON.stringify(msg_obj);
-            // send the message as an ordinary text
-
-            connection.send(msg_obj);
             $(this).val('');
 
 
@@ -155,7 +157,7 @@ $(function () {
      * This method is optional. If the server wasn't able to respond to the
      * in 3 seconds then show some error message to notify the user that
      * something is wrong.
-     */
+     
     setInterval(function() {
         if (connection.readyState !== 1) {
             input.attr('disabled', 'disabled');
@@ -172,6 +174,7 @@ $(function () {
             });
         }
     }, 3000);
+    */
 
     /**
      * Add message to the chat window
@@ -218,22 +221,14 @@ $(function () {
            /\d+/.test(player_name) == false &&      //check for numerals
            /^\w+$/.test(player_name) == true) {     //tests that the string is only a-z
         	
+            socket.emit('userconfig', {player_name: player_name})
 
-            var user_config_obj = {
-                type: 'userconfig',
-                player_name: player_name
-            }
-
-            user_config_obj = JSON.stringify(user_config_obj);
-
-            connection.send(user_config_obj);
-
-        	// we know that the first message sent from a user their name
             if (myName === false) {
                 myName = player_name;
                 $.cookie("player_name", player_name, { expires: 1 });
             }
             $('#msg_box').animate({'top':'-20%'},400,function(){
+                input.removeAttr('disabled');
                 $('#overlay').fadeOut('fast');
             });
         } else {
@@ -261,8 +256,10 @@ $(function () {
 });
 
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////
 // Initialize EaselJS stuff
+//////////////////////////////////////////////////////////////////////////////////////////////
+
 var board_img;
 
 function init() {
@@ -277,9 +274,3 @@ function tick() {
     stage.update();
 }
 
-var socket = io.connect('http://localhost:8080');
-    socket.on('news', function (data) {
-        console.log(data);
-        socket.emit('my other event', { my: 'data' 
-    });
-});

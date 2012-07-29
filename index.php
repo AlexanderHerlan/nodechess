@@ -100,6 +100,7 @@ $route = new routing();
 	<script defer src="<?=$route->root?>js/mylibs/jquery.mousewheel.js"></script>
 	<script defer src="<?=$route->root?>js/mylibs/jquery.jscrollpane.min.js"></script>
 	<script defer src="<?=$route->root?>js/mylibs/jquery.cookie.js"></script>
+	<script defer src="<?=$route->root?>js/libs/socket.io.min.js"></script>
 	<script defer src="<?=$route->root?>js/libs/angular-1.0.1.js"></script>
 	<script defer src="<?=$route->root?>js/libs/easeljs-0.4.2.min.js"></script>
 	<script defer src="<?=$route->root?>js/libs/tweenjs-0.2.0.min.js"></script>
