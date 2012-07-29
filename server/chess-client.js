@@ -28,6 +28,7 @@ var chess_client = function () {
 		var piece_size = 64;
 
 	    var frames = [ ];
+	    var framenumber;
 	    // x, y, width, height, image index, regX, regY
 	    frames[0]  = [  0, 0,64,64,0,0,0]; // white king
 	    frames[1]  = [ 64, 0,64,64,0,0,0]; // white queen
@@ -79,24 +80,24 @@ var chess_client = function () {
 			if(piece_hex !== 0) {
 				if(color == 0) {
 					if((piece_hex & 0x07) === 0x07){ // queen
-						var framenumber = 1;
+						framenumber = 1;
 					}else if((piece_hex & 0x06) === 0x06){ // rook
-						var framenumber = 4;
+						framenumber = 4;
 				    }else if((piece_hex & 0x05) === 0x05){ // bishop
-				    	var framenumber = 2;
+				    	framenumber = 2;
 				    }else if((piece_hex & 0x03) === 0x03){ // king
-				    	var framenumber = 0;
+				    	framenumber = 0;
 				    }else if((piece_hex & 0x02) === 0x02){ // knight
-				    	var framenumber = 3;
+				    	framenumber = 3;
 				    }else if((piece_hex & 0x01) === 0x01){ // pawn
-				    	var framenumber = 5; 
+				    	framenumber = 5; 
 				    }
 				} else {
 					if((piece_hex & 0x07) === 0x07){ // queen
 						var framenumber = 7;
 					}else if((piece_hex & 0x06) === 0x06){ // rook
 						var framenumber = 10;
-				    }else if((piece_hex & 0x05) === 0x05){ // bishop
+				    }else if((piece_hex & 0x05) === 0x05){ // bishop 
 				    	var framenumber = 8;
 				    }else if((piece_hex & 0x03) === 0x03){ // king
 				    	var framenumber = 6;
@@ -107,9 +108,9 @@ var chess_client = function () {
 				    }
 				}
 
-		    	var frame = spritesheet.getFrame(framenumber);
-				var unit = new Bitmap(frame.image);
-				unit.sourceRect = frame.rect;
+		    	var frame = SpriteSheetUtils.extractFrame(spritesheet,framenumber);
+
+				var unit = new Bitmap(frame);
 				unit.x = column;
 				unit.y = row;
 				stage.addChild(unit);
