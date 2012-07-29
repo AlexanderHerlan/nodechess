@@ -85,10 +85,9 @@ $(function () {
         }
     });
     socket.on('chatmessage', function (message) {
-        console.log(message);
+        var msg = message.msg;
         input.removeAttr('disabled'); // let the user write another message
-        addMessage(message.data.author, message.data.text,message.data.color, new Date(message.data.time));
- 
+        addMessage(msg.author, msg.text,msg.color, new Date(msg.time));
     });
     socket.on('error', function () {
         console.log("Error: disconnected to server");
