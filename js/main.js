@@ -146,33 +146,6 @@ $(function () {
         }
     });
 
-    /**
-     * This method is optional. If the server wasn't able to respond to the
-     * in 3 seconds then show some error message to notify the user that
-     * something is wrong.
-     
-    setInterval(function() {
-        if (connection.readyState !== 1) {
-            input.attr('disabled', 'disabled');
-
-            $('#msg_box').removeClass("welcome_box");
-            $('#msg_box').addClass("error_box");
-            $('#msg_box_title').html("Error");
-            $('#msg_box_body').html('<p>The server appears to be down.<p><p><button id="reconnect">Reconnect</button>');
-            $('#reconnect').click(function(){
-                window.location = '.';
-            }); 
-            $('#msg_box').animate({'top':'50%'},400,function(){
-                $('#overlay').fadeIn('fast');
-            });
-        }
-    }, 3000);
-    */
-
-    /**
-     * Add message to the chat window
-     */
-
 	var settings = {
 		stickToBottom: true,
 		showArrows: false,

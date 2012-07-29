@@ -37,7 +37,7 @@ var colors = [ 'white', 'black', 'green', 'blue', 'red', 'purple', 'yellowgreen'
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 // Helper function for escaping input strings
-function htmlEntities(str) {
+function html_escape(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;')
                       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
@@ -48,13 +48,23 @@ function shuffle(arr) {
     return arr;
 }
 
+// format time for server console
+function fromat_time(dt) {
+    var ap = "AM";
+    var hour = dt.getHours();
+    if (hour   > 11) { ap = "PM";        }
+    if (hour   > 12) { hour = hour - 12; }
+    if (hour   == 0) { hour = 12;        }
+    return (dt.getHours() < 10 ? '0' + hour : hour) + ':' + (dt.getMinutes() < 10 ? '0' + dt.getMinutes() + " " + ap : dt.getMinutes() + " " + ap);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Socket.io initialization and configuration
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 var io = socketio.listen(port, function() {
     //if the socket.io server starts correctly, display a message that we have connected.
-    console.log((new Date()) + " Socket.io Server is listening on port " + port);
+    console.log(fromat_time(new Date()) + ' - Server is listening on port ' + port);
 });
 
 io.configure(function() {
@@ -72,7 +82,7 @@ io.configure(function() {
 // when a user connects
 io.sockets.on('connection', function (socket) {
     // log the event to the server console
-    console.log((new Date()) + ' Socket.io user connected.');
+    console.log(fromat_time(new Date()) + ' - User connected');
 
     // we need to know the connecting user's index in the 'clients' array
     // to remove them later when they disconnect
@@ -114,18 +124,18 @@ io.sockets.on('connection', function (socket) {
         }
 
         // log new user to server console
-        console.log((new Date()) + ' User is known as: ' + userName + ' with ' + userColor + ' color.');
+        console.log(fromat_time(new Date()) + ' - User is known as "' + userName + '" with ' + userColor + ' color');
     });
 
     // when recieving a chat message from a user
     socket.on('chatmessage', function(message) {
         // log the message to the server console
-        console.log((new Date()) + ' Received Message from ' + userName + ': ' + message.text);
+        console.log(fromat_time(new Date()) + ' - ' + userName + ' says: ' + message.text);
 
         // keep a history of all sent messages
         var msg = {
             time: (new Date()).getTime(),
-            text: htmlEntities(message.text),
+            text: html_escape(message.text),
             author: userName,
             color: userColor
         };
@@ -143,7 +153,7 @@ io.sockets.on('connection', function (socket) {
     socket.on('disconnect', function () {
         if (userName !== false && userColor !== false) {
             // Log the event to the server console
-            console.log((new Date()) + " Peer disconnected.");
+            console.log(fromat_time(new Date()) + ' - Peer disconnected');
 
             // remove user from the list of connected clients
             clients.splice(index, 1);
