@@ -28,12 +28,6 @@ var port = 6969;
 var history = [ ];
 // list of currently connected clients (users)
 var clients = [ ];
-//websockets connection
-var connection;
-// http webserver to facilitate the websockets connection
-var webserver;
-// WebSocket handle
-var socket;
 // Available player colors
 var colors = [ 'red', 'green', 'blue', 'magenta', 'purple', 'orange', 'black', 'white' ];
 
