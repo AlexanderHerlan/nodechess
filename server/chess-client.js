@@ -22,8 +22,7 @@ var chess_client = function () {
 
 	this.draw_pieces = function(stage, chessboard) {
 		//reset the board behind the chess pieces. 
-		//that.draw_board(canvas);
-
+		//that.draw_board(stage);
 		//set the size of each square on the board
 		var piece_size = 64;
 
@@ -97,7 +96,7 @@ var chess_client = function () {
 						var framenumber = 7;
 					}else if((piece_hex & 0x06) === 0x06){ // rook
 						var framenumber = 10;
-				    }else if((piece_hex & 0x05) === 0x05){ // bishop 
+				    }else if((piece_hex & 0x05) === 0x05){ // bishop
 				    	var framenumber = 8;
 				    }else if((piece_hex & 0x03) === 0x03){ // king
 				    	var framenumber = 6;
@@ -115,18 +114,6 @@ var chess_client = function () {
 				unit.y = row;
 				stage.addChild(unit);
 				stage.update();
-		    	/*
-		    	//console.log('column: ' + column + ' row: ' + row);
-		    	var pieces_crop = new Rectangle ( color ,  sprite_x, piece_size , piece_size );
-		    	pieces.x = 0;
-			    pieces.y = 0;
-			    pieces.regX = column;
-			    pieces.regY = row;
-			    pieces.sourceRect = pieces_crop;
-			    stage.addChild(pieces);
-			    */
-		    	//canvas.drawImage(sprite, sprite_piece, color, piece_size, piece_size, column, row, piece_size, piece_size); 
-		    	stage.update();
 		    }
 		    
 		}		

@@ -69,6 +69,8 @@ $(function () {
         console.log("Connected to Chess server.");
     });
     socket.on('boardstate', function (board) {
+        console.log("Updating chessboard...");
+        console.log(board.data);
         chess_client.draw_pieces(stage, board.data);
         chess_client.chess_board = board.data;
         chess_board = board.data;
@@ -262,6 +264,7 @@ function init() {
     Ticker.setFPS(30);
     Ticker.addListener(this);
     chess_client.draw_board(stage);
+    //chess_client.draw_pieces(stage, chess_client.chess_board);
 }
 
 function tick() {

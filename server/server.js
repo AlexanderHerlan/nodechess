@@ -97,7 +97,10 @@ io.sockets.on('connection', function (socket) {
     }
 
     // also send the board layout
-    socket.emit('boardstate', {data: chess.board});
+    setTimeout(function(){
+        socket.emit('boardstate', {data: chess.board});
+    }, 1000);
+    
 
     // when the user sends a user configuration request
     socket.on('userconfig', function(userconfig) {
