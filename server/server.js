@@ -29,8 +29,8 @@ var port = 6969;
 var clients = [ ];
 // latest 100 chat messages
 var chat_history = [ ];
-// Available player colors
-var colors = [ 'red', 'green', 'blue', 'magenta', 'purple', 'orange', 'black', 'white' ];
+// list of available player colors
+var colors = [ 'white', 'black', 'green', 'blue', 'red', 'purple', 'yellowgreen', 'darkblue', 'firebrick' ];
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Helper functions
