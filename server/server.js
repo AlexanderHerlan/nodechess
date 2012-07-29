@@ -95,6 +95,19 @@ io.sockets.on('connection', function (socket) {
         socket.emit('userinfo', {color: userColor, name: userName});
         console.log((new Date()) + ' User is known as: ' + userName + ' with ' + userColor + ' color.');
 
+
+        // create a message to alert other users of the newly connected player
+        var obj = {
+            time: (new Date()).getTime(),
+            text: '/me has connected.',
+            author: userName,
+            color: userColor
+        };
+
+        //broadcast the message to all users
+        for (var i=0; i < clients.length; i++) {
+            clients[i].emit('chatmessage', {data: obj});
+        }
     });
     socket.on('chatmessage', function(message) {
         console.log((new Date()) + ' Received Message from ' + userName + ': ' + message.text);
@@ -121,6 +134,19 @@ io.sockets.on('connection', function (socket) {
             clients.splice(index, 1);
             // push back user's color to be reused by another user
             colors.push(userColor);
+            
+            // create a message to alert other users of the now disconnected player
+            var obj = {
+                time: (new Date()).getTime(),
+                text: '/me has disconnected.',
+                author: userName,
+                color: userColor
+            };
+
+            //broadcast the message to all users
+            for (var i=0; i < clients.length; i++) {
+                clients[i].emit('chatmessage', {data: obj});
+            }
         }
     });
 });

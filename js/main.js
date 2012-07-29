@@ -5,6 +5,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 var chess_client = new chess_client();
 
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Global variables
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -28,6 +29,7 @@ function hasWhiteSpace(s) {
 //////////////////////////////////////////////////////////////////////////////////////////////
 // App Entry Point:
 //////////////////////////////////////////////////////////////////////////////////////////////
+WEB_SOCKET_SWF_LOCATION='server/WebSocketMain.swf';
 $(function () {
     "use strict";
 
@@ -69,19 +71,13 @@ $(function () {
         console.log("Connected to Chess server.");
     });
     socket.on('boardstate', function (board) {
-        console.log("boardstate: ");
-        console.log(board);
         chess_client.draw_pieces(stage, board.data);
     });
     socket.on('userinfo', function(data){
-        console.log("userinfo: ");
-        console.log(data);
-        status.html('Playing as: <span style="color:' + data.color + '">' + data.name + '</span>');
+        status.html('Playing as: <span style="color:' + data.color + ';font-weight:bold">' + data.name + '</span>');
         input.removeAttr('disabled').focus();
     });
     socket.on('chathistory', function (history) {
-        console.log("chathistory: ");
-        console.log(history);
         // insert every single message to the chat window
         for (var i=0; i < history.data.length; i++) {
             addMessage(history.data[i].author, history.data[i].text,
