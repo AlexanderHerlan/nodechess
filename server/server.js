@@ -125,7 +125,7 @@ io.sockets.on('connection', function (socket) {
         // keep a history of all sent messages
         var msg = {
             time: (new Date()).getTime(),
-            text: message.text,
+            text: htmlEntities(message.text),
             author: userName,
             color: userColor
         };
