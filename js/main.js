@@ -1,13 +1,12 @@
-//////////////////////////////////////////////////////////////////////////////////////////////
-//
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Node Chess client by Alexander Herlan.
 //
-//////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var chess_client = new chess_client();
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Global variables
-//////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var canvas = document.getElementById("chesscanvas");
 var stage = new Stage(canvas);
 var connection;
@@ -17,16 +16,16 @@ var stage;
 //socket.io
 var socket;
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Helper functions
-//////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function hasWhiteSpace(s) {
   return s.indexOf(' ') >= 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // App Entry Point:
-//////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 WEB_SOCKET_SWF_LOCATION='server/WebSocketMain.swf';
 $(function () {
     "use strict";
@@ -54,6 +53,7 @@ $(function () {
                 $('#msg_box').animate({'top':'50%'},500);
             });
 
+            // put the mouse cursor into the player_name box for convenience 
             $('#player_name').focus();
 
             $('#continue_player').click(function(){
@@ -72,7 +72,8 @@ $(function () {
         chess_client.draw_pieces(stage, board.data);
     });
     socket.on('userinfo', function(data){
-        status.html('Playing as: <span style="color:' + data.color + ';font-weight:bold">' + data.name + '</span>');
+        status.html('Playing as: <span style="color:' + data.color + ';font-weight:bold">' 
+                                                      + data.name + '</span>');
         input.removeAttr('disabled').focus();
     });
     socket.on('chathistory', function (history) {
@@ -88,7 +89,18 @@ $(function () {
         addMessage(msg.author, msg.text,msg.color, new Date(msg.time));
     });
     socket.on('error', function () {
-        console.log("Error: disconnected to server");
+        console.log("Error: Unable to connect to chess server");
+        $('#msg_box').removeClass("welcome_box");
+        $('#msg_box').addClass("error_box");
+        $('#msg_box_title').html("Error");
+        $('#msg_box_body').html('<p>Unable to connect to server.</p>'
+                              + '<p><button id="reconnect">Retry</button></p>');
+        $('#reconnect').click(function(){
+            window.location = '.';
+        }); 
+        $('#msg_box').animate({'top':'50%'},400,function(){
+            $('#overlay').fadeIn('fast');
+        });
     });
     socket.on('disconnect', function () {
         console.log("Error: disconnected to server");
@@ -97,13 +109,29 @@ $(function () {
         $('#msg_box').removeClass("welcome_box");
         $('#msg_box').addClass("error_box");
         $('#msg_box_title').html("Error");
-        $('#msg_box_body').html('<p>The server appears to be down.<p><p><button id="reconnect">Reconnect</button>');
+        $('#msg_box_body').html('<p>The server appears to be down.</p>'
+                              + '<p>...</p>');
         $('#reconnect').click(function(){
             window.location = '.';
         }); 
         $('#msg_box').animate({'top':'50%'},400,function(){
             $('#overlay').fadeIn('fast');
         });
+    });
+
+    var retry_count = 0;
+    socket.on('reconnecting', function () {
+        retry_count++;
+        if(retry_count < 5) {
+            $('#msg_box_body').html('<p>The server appears to be offline. Retrying...</p>'
+                                  + '<p>Retry Count: ' + retry_count + '</p>');
+        } else {
+            $('#msg_box_body').html('<p>Unable to connect to server.</p>'
+                                  + '<p><button id="reconnect">Retry</button></p>');
+            $('#reconnect').click(function(){ window.location = '.'; }); 
+        }
+        
+        console.log("retrying...")
     });
     socket.on('reconnect', function () {
         $('#msg_box').animate({'top':'-20%'},400,function(){
@@ -161,12 +189,14 @@ $(function () {
             api.getContentPane().append('<p><span class="chat_time">' +
                  + (dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours()) + ':'
                  + (dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes())
-                 + '</span> <span style="color:' + color + '">' + author + ' ' + message.substring(4) + '</span></p>');
+                 + '</span> <span style="color:' + color + '">' 
+                 + author + ' ' + message.substring(4) + '</span></p>');
         } else {
             api.getContentPane().append('<p><span class="chat_time">' +
                  + (dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours()) + ':'
                  + (dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes())
-                 + '</span> <span style="color:' + color + '">' + author + ':</span> ' + message + '</p>');
+                 + '</span> <span style="color:' + color + '">'
+                 + author + ':</span> ' + message + '</p>');
         }
 
 
@@ -222,9 +252,9 @@ $(function () {
 });
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Initialize EaselJS stuff
-//////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var board_img;
 
