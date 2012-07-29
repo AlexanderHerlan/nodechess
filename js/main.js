@@ -70,6 +70,8 @@ $(function () {
     });
     socket.on('boardstate', function (board) {
         chess_client.draw_pieces(stage, board.data);
+        chess_client.chess_board = board.data;
+        chess_board = board.data;
     });
     socket.on('userinfo', function(data){
         status.html('Playing as: <span style="color:' + data.color + ';font-weight:bold">' 
@@ -256,17 +258,14 @@ $(function () {
 // Initialize EaselJS stuff
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-var board_img;
-
 function init() {
     Ticker.setFPS(30);
     Ticker.addListener(this);
-
     chess_client.draw_board(stage);
 }
 
 function tick() {
+    
     //re-render the stage
     stage.update();
 }
-
