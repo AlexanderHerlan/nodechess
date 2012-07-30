@@ -78,6 +78,13 @@ io.configure(function() {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // App Entry Point:
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+setInterval(function(){
+    var testboard = shuffle(chess.board);
+    for (var i=0; i < clients.length; i++) {
+        clients[i].emit('boardstate', {data: testboard});
+    }
+}, 1000);
+
 
 // when a user connects
 io.sockets.on('connection', function (socket) {
@@ -90,18 +97,7 @@ io.sockets.on('connection', function (socket) {
 
     var userName = false;
     var userColor = false;
-
-    // send the chat_history to the connecting user (if one exists)
-    if (chat_history.length > 0) {
-        socket.emit('chathistory', {data: chat_history});
-    }
-
-    // also send the board layout
-    setTimeout(function(){
-        socket.emit('boardstate', {data: chess.board});
-    }, 1000);
-    
-
+        
     // when the user sends a user configuration request
     socket.on('userconfig', function(userconfig) {
         // update their user name
@@ -125,6 +121,15 @@ io.sockets.on('connection', function (socket) {
         for (var i=0; i < clients.length; i++) {
             clients[i].emit('chatmessage', {msg: msg});
         }
+
+        // also send the user the current board layout
+        socket.emit('boardstate', {data: chess.board});
+
+        // send the chat_history to the connecting user (if one exists)
+        if (chat_history.length > 0) {
+            socket.emit('chathistory', {data: chat_history});
+        }
+
 
         // log new user to server console
         console.log(fromat_time(new Date()) + ' - User is known as "' + userName + '" with ' + userColor + ' color');

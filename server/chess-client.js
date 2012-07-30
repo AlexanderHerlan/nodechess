@@ -21,6 +21,11 @@ var chess_client = function () {
 	}
 
 	this.draw_pieces = function(stage, chessboard) {
+		that.chess_board = chessboard;
+
+		stage.removeAllChildren();
+		stage.clear();
+		stage.update();
 		//reset the board behind the chess pieces. 
 		//that.draw_board(stage);
 		//set the size of each square on the board
@@ -50,7 +55,6 @@ var chess_client = function () {
 		var spritesheet = new SpriteSheet(data);
 	
 		for (var i = 0; i < chessboard.length; i++) {
-
 			piece = chessboard[i];
 			piece_hex = chessboard[i];
 			if(piece < 10) {
@@ -74,7 +78,7 @@ var chess_client = function () {
 
 			//color = Number(color) * piece_size;
 			row = Number(row) * piece_size;
-			column = Number(column) * piece_size;
+			column = parseInt(column,16) * piece_size;
 
 			if(piece_hex !== 0) {
 				if(color == 0) {

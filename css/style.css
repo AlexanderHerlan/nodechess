@@ -253,6 +253,16 @@ li,ul {
   margin-top:-256px;
 }
 
+#chessboard_canvas {
+
+}
+
+#chesspiece_canvas {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
 #legend {
   z-index: 1;
 }
@@ -282,6 +292,11 @@ li,ul {
   padding-top: 41px;
 }
 
+#chesssidebar {
+  position: absolute;
+  top:0px;
+}
+
 #chesssidebar h2 {
   padding: 0px;
   margin: 0px;
@@ -297,7 +312,7 @@ li,ul {
   width: 320px;
   height: 128px;
   margin-left: 512px;
-  margin-top: -517px;
+  margin-top: 0px;
 }
 #chessinfo_pane {
   width: 300px;
@@ -316,7 +331,7 @@ li,ul {
   position: absolute;
   width: 320px;
   height: 192px;
-  margin-top: -356px;
+  margin-top: 161px;
   margin-left: 512px;
 
 }
@@ -339,7 +354,7 @@ li,ul {
   position: absolute;
   width: 320px;
   height: 192px;
-  margin-top: -197px;
+  margin-top: 320px;
   margin-left: 512px;
 }
 #chesschat_buffer {

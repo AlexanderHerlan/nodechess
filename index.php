@@ -64,9 +64,8 @@ $route = new routing();
 						</ul>
 					</div>
 				</div>
-				<canvas id="chesscanvas" width="512" height="512">
-
-				</canvas>
+				<canvas id="chessboard_canvas" width="512" height="512"></canvas>
+				<canvas id="chesspiece_canvas" width="512" height="512"></canvas>
 				<div id="chesssidebar">
 					<div id="chessinfo">
 						<h2>Game Info</h2>

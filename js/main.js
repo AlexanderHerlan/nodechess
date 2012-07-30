@@ -7,11 +7,13 @@ var chess_client = new chess_client();
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Global variables
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-var canvas = document.getElementById("chesscanvas");
-var stage = new Stage(canvas);
+var chessboard_canvas = document.getElementById("chessboard_canvas");
+var chessboard_stage  = new Stage(chessboard_canvas);
+
+var chesspiece_canvas = document.getElementById("chesspiece_canvas");
+var chesspiece_stage  = new Stage(chesspiece_canvas);
 var connection;
 var chess_board;
-var stage;
 
 //socket.io
 var socket;
@@ -69,9 +71,7 @@ $(function () {
         console.log("Connected to Chess server.");
     });
     socket.on('boardstate', function (board) {
-        console.log("Updating chessboard...");
-        console.log(board.data);
-        chess_client.draw_pieces(stage, board.data);
+        chess_client.draw_pieces(chesspiece_stage, board.data);
         chess_client.chess_board = board.data;
         chess_board = board.data;
     });
@@ -263,12 +263,13 @@ $(function () {
 function init() {
     Ticker.setFPS(30);
     Ticker.addListener(this);
-    chess_client.draw_board(stage);
+    chess_client.draw_board(chessboard_stage);
     //chess_client.draw_pieces(stage, chess_client.chess_board);
 }
 
 function tick() {
-    
+    //console.log()
     //re-render the stage
-    stage.update();
+    //chesspiece_stage.update();
+    //chessboard_stage.update();
 }
