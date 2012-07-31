@@ -15,6 +15,7 @@ $route = new routing();
 	<meta name="author" content="Alex Herlan">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<link rel="stylesheet" href="<?=$route->root?>css/style.css">
+	<link rel="stylesheet" href="<?=$route->root?>js/mylibs/css/uniform.default.css" type="text/css" media="screen" charset="utf-8" />
 	<script src="<?=$route->root?>js/libs/modernizr-2.5.3.min.js"></script>
 </head>
 
@@ -25,8 +26,16 @@ $route = new routing();
 		<h1 id="msg_box_title">Welcome to Chess!</h1>
 		<div id="msg_box_body">
 			<form id="frm_player_details" >
-				<p>Please choose a player name: <span id="player_name_error"></span></p>
-				<p><input type="text" id="player_name"> <button type="button" id="continue_player">Continue</button></p>
+				<p>Please choose a name: </p>
+				<input type="text" id="player_name"><div id="player_name_error"></div>
+				<div id="color_select">
+				<label for="player_w"><input type="radio" name="player_select" id="player_w" value="white"><span class="white_king player_select_piece">White</span></label>
+				<label for="player_b"><input type="radio" name="player_select" id="player_b" value="black"><span class="black_king player_select_piece">Black</span></label>
+				<label for="player_s"><input type="radio" name="player_select" id="player_s" value="spectator"><span class="spectator player_select_piece">Spectator</span></label>
+				</div>
+				<div id="msg_box_submit">
+					<button type="button" id="continue_player">Continue</button>
+				</div>
 			</form>
 		</div>
 	</div>
@@ -99,10 +108,11 @@ $route = new routing();
 	<script defer src="<?=$route->root?>js/mylibs/jquery.mousewheel.js"></script>
 	<script defer src="<?=$route->root?>js/mylibs/jquery.jscrollpane.min.js"></script>
 	<script defer src="<?=$route->root?>js/mylibs/jquery.cookie.js"></script>
+	<script defer src="<?=$route->root?>js/mylibs/jquery.uniform.js"></script>
+	<script src="<?=$route->root?>js/libs/easeljs-0.4.2.min.js"></script>
+	<script defer src="<?=$route->root?>js/libs/tweenjs-0.2.0.min.js"></script>
 	<script defer src="<?=$route->root?>js/libs/socket.io.min.js"></script>
 	<script defer src="<?=$route->root?>js/libs/angular-1.0.1.js"></script>
-	<script defer src="<?=$route->root?>js/libs/easeljs-0.4.2.min.js"></script>
-	<script defer src="<?=$route->root?>js/libs/tweenjs-0.2.0.min.js"></script>
 	<script defer src="<?=$route->root?>server/chess-client.js"></script>
 	<script defer src="<?=$route->root?>js/main.js"></script>
 	<script>

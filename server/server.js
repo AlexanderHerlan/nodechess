@@ -27,10 +27,13 @@ var http = require('http'),
 var port = 6969;
 // list of currently connected clients (users)
 var clients = [ ];
+// only 1 person can be the white, or the black player, everyone else is a spectator.
+var client_white = false;
+var client_black = false;
 // latest 100 chat messages
 var chat_history = [ ];
 // list of available player colors
-var colors = [ 'white', 'black', 'green', 'blue', 'red', 'purple', 'yellowgreen', 'darkblue', 'firebrick' ];
+var colors = [ 'green', 'blue', 'red', 'purple', 'yellowgreen', 'darkblue', 'firebrick' ];
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Helper functions
@@ -58,6 +61,8 @@ function fromat_time(dt) {
     return (dt.getHours() < 10 ? '0' + hour : hour) + ':' + (dt.getMinutes() < 10 ? '0' + dt.getMinutes() + " " + ap : dt.getMinutes() + " " + ap);
 }
 
+
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Socket.io initialization and configuration
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,12 +83,15 @@ io.configure(function() {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // App Entry Point:
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/* function for testing latency of websocket transport
 setInterval(function(){
     var testboard = shuffle(chess.board);
-    for (var i=0; i < clients.length; i++) {
+    for(var i = 0; i < clients.length; i++) {
         clients[i].emit('boardstate', {data: testboard});
     }
-}, 1000);
+}, 100);
+*/
 
 
 // when a user connects
@@ -97,14 +105,32 @@ io.sockets.on('connection', function (socket) {
 
     var userName = false;
     var userColor = false;
+    var userSelect = false;
+
+    socket.emit('clientlist', {white: client_white.player_name, black: client_black.player_name });
         
     // when the user sends a user configuration request
     socket.on('userconfig', function(userconfig) {
         // update their user name
         userName = userconfig.player_name;
-
+        userSelect = userconfig.player_select;
         // get random color
         userColor = colors.shift();
+
+        if(userSelect == 'white') {
+            if(client_white == false) {
+                client_white = socket;
+                client_white.player_name = userName;
+                userColor = 'white';
+            } else { userSelect = 'spectator'; }
+        }
+        if(userSelect == 'black') {
+            if(client_black == false) {
+                client_black = socket;
+                client_black.player_name = userName;
+                userColor = 'black';
+            } else { userSelect = 'spectator'; }
+        }
 
         // send the user their asigned userinfo
         socket.emit('userinfo', {color: userColor, name: userName});
@@ -112,24 +138,33 @@ io.sockets.on('connection', function (socket) {
         // create a message to alert all other users of the newly connected player
         var msg = {
             time: (new Date()).getTime(),
-            text: '/me has connected.',
+            text: '/me has connected as ' + userSelect,
             author: userName,
             color: userColor
         };
 
+        chat_history.push(msg);
+        chat_history = chat_history.slice(-100);  
         // broadcast the "<username> has connectred" message to all users
-        for (var i=0; i < clients.length; i++) {
-            clients[i].emit('chatmessage', {msg: msg});
-        }
-
-        // also send the user the current board layout
-        socket.emit('boardstate', {data: chess.board});
+        socket.broadcast.emit('chatmessage', {msg: msg});
 
         // send the chat_history to the connecting user (if one exists)
         if (chat_history.length > 0) {
             socket.emit('chathistory', {data: chat_history});
         }
 
+        // send board state w/ a delay because EaselJS is a piece of shit
+        // (moral of the story, dont try to load remote data into <canvas>
+        // using easeljs immediately at page-load, it will fail sometimes, not others...)
+        setTimeout(function(){
+            socket.emit('boardstate', {data: chess.board});
+            setTimeout(function(){
+                socket.emit('boardstate', {data: chess.board});
+            }, 5000);
+        }, 750);
+
+        socket.emit('clientlist', {white: client_white.player_name, black: client_black.player_name });
+        socket.broadcast.emit('clientlist', {white: client_white.player_name, black: client_black.player_name });
 
         // log new user to server console
         console.log(fromat_time(new Date()) + ' - User is known as "' + userName + '" with ' + userColor + ' color');
@@ -151,10 +186,8 @@ io.sockets.on('connection', function (socket) {
         chat_history = chat_history.slice(-100);  
 
         // broadcast message to all connected clients
-        for (var i=0; i < clients.length; i++) {
-            clients[i].emit('chatmessage', {msg: msg});
-        }
-
+        socket.emit('chatmessage', {msg: msg});
+        socket.broadcast.emit('chatmessage', {msg: msg});
     });
 
     // when a user disconnects
@@ -162,12 +195,35 @@ io.sockets.on('connection', function (socket) {
         if (userName !== false && userColor !== false) {
             // Log the event to the server console
             console.log(fromat_time(new Date()) + ' - Peer disconnected');
+            
+            // if the user isnt the black or white player
+            if((clients[index] != client_white) && (clients[index] != client_black)) {
+                // push back user's color to be reused by another user
+                colors.push(userColor);
+            }
+
+            if(client_black) {
+                if(client_black.player_name == userName) {
+                    client_black.player_name = false;
+                    client_black = false;
+                    console.log(fromat_time(new Date()) + ' Black player ' + userName + ' has left the game!');
+                }
+            }
+
+            if(client_white) {
+                if(client_white.player_name == userName) {
+                    console.log(fromat_time(new Date()) + ' White player ' + userName + ' has left the game!');
+                    client_white.player_name = false;
+                    client_white = false;
+                }
+            }
+
+  
 
             // remove user from the list of connected clients
             clients.splice(index, 1);
 
-            // push back user's color to be reused by another user
-            colors.push(userColor);
+
             
             // create a message to alert other users of the disconnecting player
             var msg = {
@@ -176,11 +232,14 @@ io.sockets.on('connection', function (socket) {
                 author: userName,
                 color: userColor
             };
+            chat_history.push(msg);
+            chat_history = chat_history.slice(-100);  
 
+
+            socket.broadcast.emit('clientlist', {white: client_white.player_name, black: client_black.player_name });
             // broadcast the message to all users
-            for (var i=0; i < clients.length; i++) {
-                clients[i].emit('chatmessage', {msg: msg});
-            }
+            socket.broadcast.emit('chatmessage', {msg: msg});
+            
         }
     });
 });

@@ -25,12 +25,20 @@ function hasWhiteSpace(s) {
   return s.indexOf(' ') >= 0;
 }
 
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // App Entry Point:
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 WEB_SOCKET_SWF_LOCATION='server/WebSocketMain.swf';
-$(function () {
+
+function init() {
     "use strict";
+    $("select, input:checkbox, input:radio, input:file, button, input:text").uniform();
+
+
+    Ticker.setFPS(30);
+    Ticker.addListener(this);
+    chess_client.draw_board(chessboard_stage);
 
     // for better performance - to avoid searching in DOM
     var content = $('#chesschat_buffer');
@@ -46,55 +54,80 @@ $(function () {
     socket = io.connect('http://snakebyte.net:6969');
 
     socket.on('connect', function () {
-        
         // first we want users to establish the user's name
+        player_select_screen();
         status.text('Initializing...');
+    });
 
-        if(!$.cookie("player_name")) {
-            $('#overlay').fadeIn('fast',function(){
-                $('#msg_box').animate({'top':'50%'},500);
-            });
+    socket.on('clientlist', function (clientlist) {
+        console.log('ClientList recieved');
+        if($('#name_white')) {
+            if(clientlist.white) { 
+                 $('#name_white').html(clientlist.white);
+                 $('#player_w').attr('disabled',true);
+            } else {
+                 $('#name_white').text("<empty>");
+                 $('#player_w').attr('disabled',false);
+            }
+        }
 
-            // put the mouse cursor into the player_name box for convenience 
-            $('#player_name').focus();
-
-            $('#continue_player').click(function(){
-                $('#frm_player_details').submit();
-                return false;
-            }); 
-        } else {
-            myName = $.cookie("player_name");
-            socket.emit('userconfig', { player_name: myName });
-            input.removeAttr('disabled');
+        if($('#name_black')) {
+            if(clientlist.black) { 
+                $('#name_black').html(clientlist.black);
+                $('#player_b').attr('disabled',true);
+            } else {
+                $('#name_black').text("<empty>");
+                $('#player_b').attr('disabled',false);
+            }
         }
 
         console.log("Connected to Chess server.");
     });
+
     socket.on('boardstate', function (board) {
-        chess_client.draw_pieces(chesspiece_stage, board.data);
-        chess_client.chess_board = board.data;
+        console.log("Recieved board state");
+        var units = chess_client.draw_pieces(board.data);
+        chesspiece_stage.removeAllChildren();
+        for (var i = 0; i < units.length; i++) {
+            chesspiece_stage.addChild(units[i]);
+        }
+        chesspiece_stage.update();
         chess_board = board.data;
+
     });
+
     socket.on('userinfo', function(data){
-        status.html('Playing as: <span style="color:' + data.color + ';font-weight:bold">' 
-                                                      + data.name + '</span>');
-        input.removeAttr('disabled').focus();
+        console.log('Recieved user validation info');
+        if(!data.error) {
+            status.html('Playing as: <span style="color:' + data.color + ';font-weight:bold">' 
+                                                          + data.name + '</span>');
+            input.removeAttr('disabled').focus();
+        } else {
+
+        }
+
+        //player_start();
     });
+
     socket.on('chathistory', function (history) {
+        console.log("Received existing chat history");
         // insert every single message to the chat window
         for (var i=0; i < history.data.length; i++) {
             addMessage(history.data[i].author, history.data[i].text,
                        history.data[i].color, new Date(history.data[i].time));
         }
     });
+
     socket.on('chatmessage', function (message) {
         var msg = message.msg;
+        console.log("Chat message recieved from " + msg.author);
         input.removeAttr('disabled'); // let the user write another message
         addMessage(msg.author, msg.text,msg.color, new Date(msg.time));
     });
+
     socket.on('error', function () {
         console.log("Error: Unable to connect to chess server");
-        $('#msg_box').removeClass("welcome_box");
+        $('#msg_box').removeClass();
         $('#msg_box').addClass("error_box");
         $('#msg_box_title').html("Error");
         $('#msg_box_body').html('<p>Unable to connect to server.</p>'
@@ -106,11 +139,12 @@ $(function () {
             $('#overlay').fadeIn('fast');
         });
     });
+
     socket.on('disconnect', function () {
         console.log("Error: disconnected to server");
         input.attr('disabled', 'disabled');
 
-        $('#msg_box').removeClass("welcome_box");
+        $('#msg_box').removeClass();
         $('#msg_box').addClass("error_box");
         $('#msg_box_title').html("Error");
         $('#msg_box_body').html('<p>The server appears to be down.</p>'
@@ -124,6 +158,7 @@ $(function () {
     });
 
     var retry_count = 0;
+
     socket.on('reconnecting', function () {
         retry_count++;
         if(retry_count < 5) {
@@ -137,10 +172,11 @@ $(function () {
         
         console.log("retrying...")
     });
+
     socket.on('reconnect', function () {
-        $('#msg_box').animate({'top':'-20%'},400,function(){
-            $('#overlay').fadeOut('fast');
-        });
+        //$('#msg_box').animate({'top':'-20%'},400,function(){
+        //    $('#overlay').fadeOut('fast');
+        //});
     });
 
     // if browser doesn't support WebSocket, just show some notification and exit
@@ -210,66 +246,99 @@ $(function () {
     }
 
 
-    $('#frm_player_details').submit(function() {
+    function msg_box_hide() {
+        $('#msg_box').animate({'top':'-50%'},400,function(){
+            input.removeAttr('disabled');
+            $('#overlay').fadeOut('fast');
+        });
+    }
 
-        var player_name = $.trim($('#player_name').val());
+    function player_select_screen() {
+        $('#msg_box').removeClass();
+        $('#msg_box').addClass("welcome_box");
+        $('#msg_box_title').html("Welcome to Chess!");
+        $('#msg_box_body').html('<form id="frm_player_details"> <p>Please choose a name:</p>' +
+                '<input type="text" id="player_name"><div id="player_name_error"></div>' +
+                '<div id="color_select">' +
+                '<label for="player_w"><input type="radio" name="player_select" id="player_w" value="white"><span id="name_white" class="white_king player_select_piece">&lt;empty&gt;</span></label>' +
+                '<label for="player_b"><input type="radio" name="player_select" id="player_b" value="black"><span id="name_black" class="black_king player_select_piece">&lt;empty&gt;</span></label>' +
+                '<label for="player_s"><input type="radio" name="player_select" id="player_s" value="spectator"><span class="spectator player_select_piece">Spectator</span></label>' +
+                '</div></form>');
 
-        //Player Name validation
-        if(player_name.length < 13 &&
-           player_name.length > 2 && 
-           hasWhiteSpace(player_name) == false &&
-           /\d+/.test(player_name) == false &&      //check for numerals
-           /^\w+$/.test(player_name) == true) {     //tests that the string is only a-z
-        	
-            socket.emit('userconfig', {player_name: player_name})
 
-            if (myName === false) {
-                myName = player_name;
+        myName = $.cookie("player_name");
+        $('#overlay').fadeIn('fast',function(){
+            $('#msg_box').animate({'top':'50%'},500);
+        });
+
+        // put the mouse cursor into the player_name box for convenience 
+        $('#player_name').val(myName);
+        $('#player_name').focus();
+
+        $("select, input:checkbox, input:radio, input:file, button, input:text").uniform();
+
+        $('#frm_player_details').submit(function() {
+
+            var player_name = $.trim($('#player_name').val());
+            var player_select = $('input:radio[name=player_select]:checked').val();
+
+            //Player Name validation
+            if(player_name.length < 13 &&
+               player_name.length > 2 && 
+               hasWhiteSpace(player_name) == false &&
+               /\d+/.test(player_name) == false &&      //check for numerals
+               /^\w+$/.test(player_name) == true &&
+               player_select != undefined) {     //tests that the string is only a-z
+                
+                socket.emit('userconfig', {player_name: player_name, player_select: player_select})
+
+                if (myName === false) {
+                    myName = player_name;
+                }
                 $.cookie("player_name", player_name, { expires: 1 });
-            }
-            $('#msg_box').animate({'top':'-20%'},400,function(){
-                input.removeAttr('disabled');
-                $('#overlay').fadeOut('fast');
-            });
-        } else {
-            if(player_name.length > 12) {
-                $('#player_name_error').html(" (Shorter than 12 characters)");
+                msg_box_hide();
                 return false;
+            } else {
+                if(player_select == undefined) {
+                    $('#player_name_error').html(" Please select an option below:");
+                }
+                if(player_name.length > 12) {
+                    $('#player_name_error').html(" (Shorter than 12 characters)");
+                    return false;
+                }
+                if(hasWhiteSpace(player_name) == true) {
+                    $('#player_name_error').html(" (With no white spaces)");
+                    return false;
+                }
+                if(/\d+/.test(player_name) == true || /^\w+$/.test(player_name) == false && player_name != '') {
+                    $('#player_name_error').html(" (That contains only a-z)");
+                    return false;
+                }
+                if(player_name.length < 4) {
+                    $('#player_name_error').html(" (At least 3 characters long)");
+                    return false;
+                }
             }
-            if(hasWhiteSpace(player_name) == true) {
-                $('#player_name_error').html(" (With no white spaces)");
-                return false;
-            }
-            if(/\d+/.test(player_name) == true || /^\w+$/.test(player_name) == false) {
-                $('#player_name_error').html(" (That contains only a-z)");
-                return false;
-            }
-            if(player_name.length < 4) {
-                $('#player_name_error').html(" (At least 3 characters long)");
-                return false;
-            }
-        }
-        return false; // keep the page from refreshing on submit()
+            return false; // keep the page from refreshing on submit()
 
-	});
+        });
 
-});
+        $("input[name=player_select]").change(function () {
+            $('#frm_player_details').submit();
+        })
+
+
+    }
+
+};
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Initialize EaselJS stuff
+// EaselJS loop
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-function init() {
-    Ticker.setFPS(30);
-    Ticker.addListener(this);
-    chess_client.draw_board(chessboard_stage);
-    //chess_client.draw_pieces(stage, chess_client.chess_board);
-}
 
 function tick() {
-    //console.log()
     //re-render the stage
-    //chesspiece_stage.update();
-    //chessboard_stage.update();
+    chesspiece_stage.update();
+    chessboard_stage.update();
 }

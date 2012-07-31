@@ -243,6 +243,74 @@ li,ul {
   margin: 0px;
 }
 
+
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/* Chess Pieces                                                                                                    */
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+.white_king {
+  display: inline-block;
+  background:transparent url(../img/pieces.png);
+  background-position: 0px 0px;
+  width: 64px;
+  height: 64px;
+}
+.white_queen {}
+.white_bishop {}
+.white_knight {}
+.white_rook {}
+.white_pawn {}
+
+.black_king {
+  display: inline-block;
+  background:transparent url(../img/pieces.png);
+  background-position: 0px 64px;
+  width: 64px;
+  height: 64px;
+}
+.black_queen {}
+.black_bishop {}
+.black_knight {}
+.black_rook {}
+.black_pawn {}
+
+.spectator {
+  display: inline-block;
+  background:transparent url(../img/eye.png);
+  width: 64px;
+  height: 64px;
+}
+
+.player_select_piece {
+  margin-top: 14px;
+  margin-left:8px;
+  margin-right: 26px;
+  cursor: pointer;
+  height: 0px;
+  padding-top: 64px;
+}
+.player_select_piece:hover {
+  cursor: pointer;
+  font-weight: bold;
+  color: black;
+}
+
+.player_select_box {
+    width:300px;
+    height:150px;
+    position:absolute;
+    left:50%;
+    top:-20%;
+    margin:-106px 0 0 -150px;
+    background-color:#fff;
+    color:#7F7F7F;
+    padding:20px;
+    text-align: center;
+}
+
+#color_select {
+  margin-top: 10px;
+}
+
 #chessgame {
   width:512px;
   height:512px;
@@ -378,6 +446,7 @@ li,ul {
   overflow:hidden;
 }
 #chesschat input {
+  background-color: white;
   margin-left: 10px;
   width: 300px;
   border-color: black;
@@ -413,17 +482,25 @@ li,ul {
     border:1px solid #000;
     position:absolute;
 }
+#msg_box_submit {
+  margin-top:30px;
+  text-align: right;
+}
 
 .welcome_box{
-    width:300px;
-    height:120px;
+    text-align: center;
+    width:312px;
+    height:240px;
     left:50%;
-    top:-20%;
-    margin:-82px 0 0 -150px;
+    top:-50%;
+    margin:-140px 0 0 -156px;
     background-color:#fff;
     color:#7F7F7F;
     padding:20px;
 
+}
+.welcome_box p {
+  margin: 12px;
 }
 .error_box{
     width:300px;
@@ -437,6 +514,7 @@ li,ul {
     padding:20px;
     text-align: center;
 }
+
 
 a.boxclose{
     float:right;
@@ -463,12 +541,20 @@ a.boxclose{
 }
 
 
+#player_w {
+  display:none;
+}
 #player_name {
   width: 210px;
+  font-size: 28px;
+  text-align: center;
 }
 #player_name_error {
+  margin-top: 5px;
   color: red;
-  font-size: 10px;
+  font-size: 12px;
+  position:absolute;
+  width:312px;
 }
 .chat_time {
   font-size: 10px;

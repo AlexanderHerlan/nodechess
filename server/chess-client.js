@@ -20,12 +20,9 @@ var chess_client = function () {
 
 	}
 
-	this.draw_pieces = function(stage, chessboard) {
+	this.draw_pieces = function(chessboard) {
 		that.chess_board = chessboard;
 
-		stage.removeAllChildren();
-		stage.clear();
-		stage.update();
 		//reset the board behind the chess pieces. 
 		//that.draw_board(stage);
 		//set the size of each square on the board
@@ -54,6 +51,7 @@ var chess_client = function () {
 		}
 		var spritesheet = new SpriteSheet(data);
 	
+		var units = [];
 		for (var i = 0; i < chessboard.length; i++) {
 			piece = chessboard[i];
 			piece_hex = chessboard[i];
@@ -113,14 +111,12 @@ var chess_client = function () {
 
 		    	var frame = SpriteSheetUtils.extractFrame(spritesheet,framenumber);
 
-				var unit = new Bitmap(frame);
-				unit.x = column;
-				unit.y = row;
-				stage.addChild(unit);
-				stage.update();
+				units[i] = new Bitmap(frame);
+				units[i].x = column;
+				units[i].y = row;
 		    }
 		    
-		}		
-
+		}
+		return units;
 	}
 }
