@@ -20,16 +20,27 @@ var chess_client = function () {
 
 	}
 
-	this.draw_pieces = function(chessboard) {
-		that.chess_board = chessboard;
+	this.drag_handler = function(mouseEvent) {
+		// this is where onClick before drag code goes
+		
+		var piece = chesspiece_stage.getChildIndex(mouseEvent.target);
+		console.log("Target piece: " + piece);
+		mouseEvent.onMouseMove = function(mouseEvent) { 
+			this.target.x = mouseEvent.stageX - 32;
+			this.target.y = mouseEvent.stageY - 32;
+			that.socket.emit('userdrag', {p: piece, x: mouseEvent.stageX, y: mouseEvent.stageY});
+		}
+	}
 
+	this.draw_pieces = function(chesspiece_stage, chessboard) {
+		that.chess_board = chessboard;
 		//reset the board behind the chess pieces. 
 		//that.draw_board(stage);
 		//set the size of each square on the board
 		var piece_size = 64;
 
 	    var frames = [ ];
-	    var framenumber;
+
 	    // x, y, width, height, image index, regX, regY
 	    frames[0]  = [  0, 0,64,64,0,0,0]; // white king
 	    frames[1]  = [ 64, 0,64,64,0,0,0]; // white queen
@@ -45,14 +56,22 @@ var chess_client = function () {
 	    frames[10] = [256,64,64,64,0,0,0]; // black rook
 	    frames[11] = [320,64,64,64,0,0,0]; // black pawn
 
+	    var framenumber;
+
+	    chesspiece_stage.removeAllChildren();
+
 	    var data = {
 			images: ["img/pieces.png"],
 			frames: frames
 		}
+		var frame;
+		var bitmap;
 		var spritesheet = new SpriteSheet(data);
-	
-		var units = [];
+		var black_pieces = new Container();
+		var white_pieces = new Container();
+		var piece_id = 0;
 		for (var i = 0; i < chessboard.length; i++) {
+			framenumber = 0;
 			piece = chessboard[i];
 			piece_hex = chessboard[i];
 			if(piece < 10) {
@@ -79,9 +98,9 @@ var chess_client = function () {
 			column = parseInt(column,16) * piece_size;
 
 			if(piece_hex !== 0) {
-				if(color == 0) {
-					if((piece_hex & 0x07) === 0x07){ // queen
-						framenumber = 1;
+				if(color == 0) {                           // WHITE
+					if((piece_hex & 0x07) === 0x07){       // queen
+						framenumber = 1; 
 					}else if((piece_hex & 0x06) === 0x06){ // rook
 						framenumber = 4;
 				    }else if((piece_hex & 0x05) === 0x05){ // bishop
@@ -93,30 +112,60 @@ var chess_client = function () {
 				    }else if((piece_hex & 0x01) === 0x01){ // pawn
 				    	framenumber = 5; 
 				    }
-				} else {
-					if((piece_hex & 0x07) === 0x07){ // queen
-						var framenumber = 7;
+				    frame = SpriteSheetUtils.extractFrame(spritesheet,framenumber);
+				    bitmap = new Bitmap(frame);
+				    bitmap.onPress = this.drag_handler;
+		    		bitmap.x = column;
+		    		bitmap.y = row;
+		    		//bitmap.regX = 32;
+		    		//bitmap.regX = 32;
+		    		chesspiece_stage.addChildAt(bitmap, piece_id);
+				    //white_pieces.addChildAt(bitmap, i);
+
+				} else {                                   // BLACK
+					if((piece_hex & 0x07) === 0x07){       // queen
+						framenumber = 7;
 					}else if((piece_hex & 0x06) === 0x06){ // rook
-						var framenumber = 10;
+						framenumber = 10;
 				    }else if((piece_hex & 0x05) === 0x05){ // bishop
-				    	var framenumber = 8;
+				    	framenumber = 8;
 				    }else if((piece_hex & 0x03) === 0x03){ // king
-				    	var framenumber = 6;
+				    	framenumber = 6;
 				    }else if((piece_hex & 0x02) === 0x02){ // knight
-				    	var framenumber = 9;
+				    	framenumber = 9;
 				    }else if((piece_hex & 0x01) === 0x01){ // pawn
-				    	var framenumber = 11; 
+				    	framenumber = 11; 
 				    }
+				    frame = SpriteSheetUtils.extractFrame(spritesheet,framenumber);
+				    bitmap = new Bitmap(frame);
+				    bitmap.onPress = this.drag_handler;
+		    		bitmap.x = column;
+		    		bitmap.y = row;
+		    		//bitmap.regX = 32;
+		    		//bitmap.regX = 32;
+		    		chesspiece_stage.addChildAt(bitmap, piece_id);
+				    //black_pieces.addChildAt(bitmap, i);
 				}
-
-		    	var frame = SpriteSheetUtils.extractFrame(spritesheet,framenumber);
-
-				units[i] = new Bitmap(frame);
-				units[i].x = column;
-				units[i].y = row;
+				/*
+				for(var i; i < white_pieces.children.length; i++) {
+					white_pieces.children[i].onPress = function(mouseEvent) {
+					  console.log("pressed white: " + mouseEvent.target.id);
+					  mouseEvent.onMouseMove = function(mouseEvent) { 
+					  	console.log("mouse moved: "+mouseEvent.stageX+","+mouseEvent.stageY); 
+					  	white_pieces.children[i].x = mouseEvent.stageX;
+					  	white_pieces.children[i].y = mouseEvent.stageY;
+					  	chesspiece_stage.update();
+					  }
+					}
+				}
+				*/
+				piece_id++;
+		    	//chesspiece_stage.addChildAt(white_pieces, piece_id);
+		    	//chesspiece_stage.addChildAt(black_pieces, piece_id);
 		    }
 		    
 		}
-		return units;
+        chesspiece_stage.update();
+		return true;
 	}
 }

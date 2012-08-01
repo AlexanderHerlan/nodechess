@@ -1,8 +1,8 @@
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Node Chess client by Alexander Herlan.
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-var chess_client = new chess_client();
+var chess_client;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Global variables
@@ -31,32 +31,45 @@ function hasWhiteSpace(s) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 WEB_SOCKET_SWF_LOCATION='server/WebSocketMain.swf';
 
+chesspiece_stage.mouseEventsEnabled = true;
+
 function init() {
     "use strict";
-    $("select, input:checkbox, input:radio, input:file, button, input:text").uniform();
-
-
-    Ticker.setFPS(30);
-    Ticker.addListener(this);
-    chess_client.draw_board(chessboard_stage);
-
     // for better performance - to avoid searching in DOM
     var content = $('#chesschat_buffer');
     var input = $('#chesschat_input');
     var status = $('#current_player_status');
-    
     // my color assigned by the server
     var myColor = false;
     // my name sent to the server
     var myName = false;
 
+    // make form elements pretty w/ uniformjs
+    $("select, input:checkbox, input:radio, input:file, button, input:text").uniform();
+
+    // setup ueaseljs stuff.
+    Ticker.setFPS(30);
+    Ticker.addListener(this);
+    // draw the chessboard
+
+    chess_client = new chess_client();
+    chess_client.draw_board(chessboard_stage);
+
     // connect to socket.io server
     socket = io.connect('http://snakebyte.net:6969');
+    // give the chess client the socket.
+    chess_client.socket = socket;
 
     socket.on('connect', function () {
         // first we want users to establish the user's name
         player_select_screen();
         status.text('Initializing...');
+    });
+
+    socket.on('userdrag', function (mouse) {
+        chesspiece_stage.children[mouse.p].x = mouse.x - 32;
+        chesspiece_stage.children[mouse.p].y = mouse.y - 32;
+        chesspiece_stage.update();
     });
 
     socket.on('clientlist', function (clientlist) {
@@ -86,14 +99,8 @@ function init() {
 
     socket.on('boardstate', function (board) {
         console.log("Recieved board state");
-        var units = chess_client.draw_pieces(board.data);
-        chesspiece_stage.removeAllChildren();
-        for (var i = 0; i < units.length; i++) {
-            chesspiece_stage.addChild(units[i]);
-        }
-        chesspiece_stage.update();
-        chess_board = board.data;
-
+        chess_client.draw_pieces(chesspiece_stage, board.data);
+        //chess_board = board.data;
     });
 
     socket.on('userinfo', function(data){
@@ -257,7 +264,7 @@ function init() {
         $('#msg_box').removeClass();
         $('#msg_box').addClass("welcome_box");
         $('#msg_box_title').html("Welcome to Chess!");
-        $('#msg_box_body').html('<form id="frm_player_details"> <p>Please choose a name:</p>' +
+        $('#msg_box_body').html('<form id="frm_player_details"> <p>Choose a name:</p>' +
                 '<input type="text" id="player_name"><div id="player_name_error"></div>' +
                 '<div id="color_select">' +
                 '<label for="player_w"><input type="radio" name="player_select" id="player_w" value="white"><span id="name_white" class="white_king player_select_piece">&lt;empty&gt;</span></label>' +
@@ -290,13 +297,16 @@ function init() {
                /^\w+$/.test(player_name) == true &&
                player_select != undefined) {     //tests that the string is only a-z
                 
-                socket.emit('userconfig', {player_name: player_name, player_select: player_select})
 
                 if (myName === false) {
                     myName = player_name;
                 }
                 $.cookie("player_name", player_name, { expires: 1 });
-                msg_box_hide();
+                $('#msg_box').animate({'top':'-50%'},400,function(){
+                    input.removeAttr('disabled');
+                    $('#overlay').fadeOut('fast');
+                    socket.emit('userconfig', {player_name: player_name, player_select: player_select});
+                });
                 return false;
             } else {
                 if(player_select == undefined) {

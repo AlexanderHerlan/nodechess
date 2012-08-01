@@ -25,11 +25,11 @@ var http = require('http'),
 
 // Port where we'll run the socket.io server
 var port = 6969;
-// list of currently connected clients (users)
+// list of ALL currently connected clients (users)
 var clients = [ ];
 // only 1 person can be the white, or the black player, everyone else is a spectator.
-var client_white = false;
-var client_black = false;
+var client_white = false;  // handle to white client
+var client_black = false;  // handle to black client
 // latest 100 chat messages
 var chat_history = [ ];
 // list of available player colors
@@ -170,6 +170,10 @@ io.sockets.on('connection', function (socket) {
         console.log(fromat_time(new Date()) + ' - User is known as "' + userName + '" with ' + userColor + ' color');
     });
 
+    socket.on('userdrag', function(mouse) {
+        socket.broadcast.emit('userdrag', {p: mouse.p, x: mouse.x, y: mouse.y})
+    });
+
     // when recieving a chat message from a user
     socket.on('chatmessage', function(message) {
         // log the message to the server console
@@ -206,13 +210,13 @@ io.sockets.on('connection', function (socket) {
                 if(client_black.player_name == userName) {
                     client_black.player_name = false;
                     client_black = false;
-                    console.log(fromat_time(new Date()) + ' Black player ' + userName + ' has left the game!');
+                    console.log(fromat_time(new Date()) + ' - Black player ' + userName + ' has left the game!');
                 }
             }
 
             if(client_white) {
                 if(client_white.player_name == userName) {
-                    console.log(fromat_time(new Date()) + ' White player ' + userName + ' has left the game!');
+                    console.log(fromat_time(new Date()) + ' - White player ' + userName + ' has left the game!');
                     client_white.player_name = false;
                     client_white = false;
                 }
