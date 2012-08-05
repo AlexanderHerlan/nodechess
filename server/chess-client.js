@@ -29,6 +29,7 @@ var chess_client = function () {
 			this.target.x = mouseEvent.stageX - 32;
 			this.target.y = mouseEvent.stageY - 32;
 			that.socket.emit('userdrag', {p: piece, x: mouseEvent.stageX, y: mouseEvent.stageY});
+			chesspiece_stage.update();
 		}
 	}
 

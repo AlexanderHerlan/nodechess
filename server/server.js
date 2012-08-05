@@ -17,7 +17,8 @@ process.title = 'node-chess';
 var http = require('http'), 
     express = require('express'),
     socketio = require('socket.io'),
-    chess = require('./chess-server.js');
+    chess = require('./chess-server.js'),
+    fs = require('fs');
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Global variables
@@ -34,6 +35,12 @@ var client_black = false;  // handle to black client
 var chat_history = [ ];
 // list of available player colors
 var colors = [ 'green', 'blue', 'red', 'purple', 'yellowgreen', 'darkblue', 'firebrick' ];
+// SSL Certs
+var ssl_options = { 
+    key:  fs.readFileSync('/etc/ssl/private/snakebyte.net.key'), 
+    cert: fs.readFileSync('/etc/ssl/certs/www.snakebyte.net.crt'),
+    ca:   fs.readFileSync('/etc/ssl/certs/www.snakebyte.net.ca-bundle')
+}; 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Helper functions
@@ -62,21 +69,29 @@ function fromat_time(dt) {
 }
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Socket.io initialization and configuration
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-var io = socketio.listen(port, function() {
-    //if the socket.io server starts correctly, display a message that we have connected.
+// setup a secure express webserver
+var webapp = express.createServer(ssl_options);
+
+webapp.get('/', function (req, res) {
+    res.send('So you like probing my sockets eh? Hmmm...');
+});
+
+webapp.listen(port, function () {
     console.log(fromat_time(new Date()) + ' - Server is listening on port ' + port);
 });
 
+var io = socketio.listen(webapp);
+
 io.configure(function() {
-    io.set('log level', 1);
+    io.set('log level', 2);
     io.set('transports', [
         'websocket',
-        'flashsocket'
+        'flashsocket', 
+        'xhr-polling'
     ]);
 });
 
@@ -112,6 +127,8 @@ io.sockets.on('connection', function (socket) {
     // when the user sends a user configuration request
     socket.on('userconfig', function(userconfig) {
         // update their user name
+
+
         userName = userconfig.player_name;
         userSelect = userconfig.player_select;
         // get random color
@@ -133,7 +150,7 @@ io.sockets.on('connection', function (socket) {
         }
 
         // send the user their asigned userinfo
-        socket.emit('userinfo', {color: userColor, name: userName});
+        socket.set('userName', userName, function () { socket.emit('userinfo', {color: userColor, name: userName}); });
 
         // create a message to alert all other users of the newly connected player
         var msg = {

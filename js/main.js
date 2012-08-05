@@ -22,7 +22,7 @@ var socket;
 // Helper functions
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function hasWhiteSpace(s) {
-  return s.indexOf(' ') >= 0;
+  return s.indexOf(' ') >= 0; 
 }
 
 
@@ -56,7 +56,7 @@ function init() {
     chess_client.draw_board(chessboard_stage);
 
     // connect to socket.io server
-    socket = io.connect('http://snakebyte.net:6969');
+    socket = io.connect('https://snakebyte.net:6969');
     // give the chess client the socket.
     chess_client.socket = socket;
 
@@ -324,7 +324,7 @@ function init() {
                     $('#player_name_error').html(" (That contains only a-z)");
                     return false;
                 }
-                if(player_name.length < 4) {
+                if(player_name.length < 3) {
                     $('#player_name_error').html(" (At least 3 characters long)");
                     return false;
                 }
