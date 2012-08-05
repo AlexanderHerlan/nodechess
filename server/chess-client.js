@@ -4,6 +4,12 @@
 var chess_client = function () {
 	var that = this;
 	var chess_board;
+	var moveCount;
+
+	this.set_state = function (game_state) {
+		
+
+	}
 
 	this.draw_board = function (stage) {
 		var chessboard = new Image();   // Create new img element

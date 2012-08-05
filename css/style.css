@@ -330,6 +330,9 @@ li,ul {
   top: 0px;
   left: 0px;
 }
+#chesspiece_canvas:active, #chesspiece_canvas:focus { 
+    cursor: none;
+}
 
 #legend {
   z-index: 1;
@@ -374,6 +377,15 @@ li,ul {
   color: #666666;
   text-align: center;
 }
+#chesssidebar h3 {
+  padding: 0px;
+  margin: 0px;
+  color: #666666;
+  font-size: 18px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #000000;
+}
 
 #chessinfo {
   position: absolute;
@@ -383,17 +395,74 @@ li,ul {
   margin-top: 0px;
 }
 #chessinfo_pane {
-  width: 300px;
+  width: 308px;
   height: 126px;
   margin-left: 10px;
-  padding-left: 4px;
-  padding-right: 4px;
   border-left-style: solid;
   border-left-width: 1px;
   border-left-color: #000000;
   border-right-style: solid;
   border-right-width: 1px;
   border-right-color: #000000;
+}
+#chessinfo_pane h3 {
+  padding: 0px;
+  margin: 0px;
+}
+#spectators_list {
+  float:right;
+  width: 154px;
+  height: 104px;
+}
+#spectators_list h3 {
+  padding-left: 4px;
+  font-size: 12px;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: #aaa;
+}
+#spectators_list div {
+  font-size: 12px;
+  padding-left: 4px;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: #aaa;
+}
+#players_list {
+  float: left;
+  width: 153px;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #000000;
+}
+#players_list h3 {
+  padding-left: 4px;
+  font-size: 10px;
+}
+
+#player_black {
+  background-color: #000;
+  color: #fff;
+  height: 52px;
+}
+#player_black h3 {
+  padding-bottom: 4px;
+}
+#player_black div {
+  text-align: center;
+  font-weight: bold;
+}
+#player_white {
+  background-color: #fff;
+  color: #000;
+  height: 52px;
+}
+#player_white  h3 {
+  padding-bottom: 4px;
+}
+#player_white div {
+  text-align: center;
+  font-weight: bold;
 }
 #chesshistory {
   position: absolute;
@@ -455,7 +524,7 @@ li,ul {
   padding: 4px;
 }
 #current_player_status {
-  padding: 5px;
+  padding: 3px;
   width: 300px;
   font-size: 12px;
 }

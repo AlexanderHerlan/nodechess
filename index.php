@@ -80,7 +80,16 @@ $route = new routing();
 						<h2>Game Info</h2>
 						<div id="chessinfo_pane">
 							<div id="current_player_status">Initializing</div>
-							<div id="players_list"></div>
+							<div id="players_list">
+								<div id="player_black">
+									<h3>Black:</h3>
+									<div class="name_black"></div>
+								</div>
+								<div id="player_white">
+									<h3>White:</h3>
+									<div class="name_white"></div>
+								</div>
+							</div>
 							<div id="spectators_list"></div>
 						</div>
 					</div>

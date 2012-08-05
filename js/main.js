@@ -66,6 +66,23 @@ function init() {
         status.text('Initializing...');
     });
 
+    socket.on('namecheck', function(data) {
+        if(!data.error) {
+            if (myName === false) {
+                myName = data.player_name;
+            }
+            $.cookie("player_name", data.player_name, { expires: 1 });
+            $('#msg_box').animate({'top':'-50%'},400,function(){
+                input.removeAttr('disabled');
+                $('#overlay').fadeOut('fast');
+                socket.emit('userconfig', {player_name: data.player_name, player_select: data.player_select});
+            });
+        } else {
+            $('#player_name_error').html('(' + data.error + ')');
+            $("input[name=player_select]").attr("checked", false);
+        }
+    });
+
     socket.on('userdrag', function (mouse) {
         chesspiece_stage.children[mouse.p].x = mouse.x - 32;
         chesspiece_stage.children[mouse.p].y = mouse.y - 32;
@@ -74,25 +91,40 @@ function init() {
 
     socket.on('clientlist', function (clientlist) {
         console.log('ClientList recieved');
-        if($('#name_white')) {
+        if($('.name_white')) {
             if(clientlist.white) { 
-                 $('#name_white').html(clientlist.white);
+                 $('.name_white').html(clientlist.white);
                  $('#player_w').attr('disabled',true);
             } else {
-                 $('#name_white').text("<empty>");
+                 $('.name_white').text("<empty>");
                  $('#player_w').attr('disabled',false);
             }
         }
 
-        if($('#name_black')) {
+        if($('.name_black')) {
             if(clientlist.black) { 
-                $('#name_black').html(clientlist.black);
+                $('.name_black').html(clientlist.black);
                 $('#player_b').attr('disabled',true);
             } else {
-                $('#name_black').text("<empty>");
+                $('.name_black').text("<empty>");
                 $('#player_b').attr('disabled',false);
             }
         }
+        console.log(clientlist.user_list);
+        var buddy_list = '<h3>Spectators:</h3> ';
+        if(clientlist.user_list.length != undefined) {
+            for(var i = 0; i < clientlist.user_list.length; i++) {
+                if(clientlist.user_list[i] != clientlist.white && clientlist.user_list[i] != clientlist.black) {
+                    buddy_list = buddy_list + "<div>" + clientlist.user_list[i] + "</div>";
+                }
+            }
+        }
+
+        $('#spectators_list').html(buddy_list);
+        if(clientlist.white == undefined) { clientlist.white = '&lt;empty&gt;'; }
+        if(clientlist.black == undefined) { clientlist.black = '&lt;empty&gt;'; }
+        $('.name_black').html(clientlist.black);
+        $('.name_black').html(clientlist.black);
 
         console.log("Connected to Chess server.");
     });
@@ -110,7 +142,7 @@ function init() {
                                                           + data.name + '</span>');
             input.removeAttr('disabled').focus();
         } else {
-
+            $('#player_name_error').html("(" + data.error + ")");
         }
 
         //player_start();
@@ -267,8 +299,8 @@ function init() {
         $('#msg_box_body').html('<form id="frm_player_details"> <p>Choose a name:</p>' +
                 '<input type="text" id="player_name"><div id="player_name_error"></div>' +
                 '<div id="color_select">' +
-                '<label for="player_w"><input type="radio" name="player_select" id="player_w" value="white"><span id="name_white" class="white_king player_select_piece">&lt;empty&gt;</span></label>' +
-                '<label for="player_b"><input type="radio" name="player_select" id="player_b" value="black"><span id="name_black" class="black_king player_select_piece">&lt;empty&gt;</span></label>' +
+                '<label for="player_w"><input type="radio" name="player_select" id="player_w" value="white"><span class="name_white white_king player_select_piece">&lt;empty&gt;</span></label>' +
+                '<label for="player_b"><input type="radio" name="player_select" id="player_b" value="black"><span class="name_black black_king player_select_piece">&lt;empty&gt;</span></label>' +
                 '<label for="player_s"><input type="radio" name="player_select" id="player_s" value="spectator"><span class="spectator player_select_piece">Spectator</span></label>' +
                 '</div></form>');
 
@@ -289,6 +321,7 @@ function init() {
             var player_name = $.trim($('#player_name').val());
             var player_select = $('input:radio[name=player_select]:checked').val();
 
+
             //Player Name validation
             if(player_name.length < 13 &&
                player_name.length > 2 && 
@@ -297,7 +330,8 @@ function init() {
                /^\w+$/.test(player_name) == true &&
                player_select != undefined) {     //tests that the string is only a-z
                 
-
+                socket.emit('namecheck', {player_name: player_name, player_select: player_select});
+                /*
                 if (myName === false) {
                     myName = player_name;
                 }
@@ -307,6 +341,7 @@ function init() {
                     $('#overlay').fadeOut('fast');
                     socket.emit('userconfig', {player_name: player_name, player_select: player_select});
                 });
+                */
                 return false;
             } else {
                 if(player_select == undefined) {
@@ -335,7 +370,7 @@ function init() {
 
         $("input[name=player_select]").change(function () {
             $('#frm_player_details').submit();
-        })
+        });
 
 
     }

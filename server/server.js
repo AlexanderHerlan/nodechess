@@ -26,15 +26,17 @@ var http = require('http'),
 
 // Port where we'll run the socket.io server
 var port = 6969;
-// list of ALL currently connected clients (users)
+// list of sockets belonging to ALL currently connected clients (users) 
 var clients = [ ];
+// list of all usernames currently in use
+var user_names = [ ];
 // only 1 person can be the white, or the black player, everyone else is a spectator.
 var client_white = false;  // handle to white client
 var client_black = false;  // handle to black client
 // latest 100 chat messages
 var chat_history = [ ];
 // list of available player colors
-var colors = [ 'green', 'blue', 'red', 'purple', 'yellowgreen', 'darkblue', 'firebrick' ];
+var colors = [ 'green', 'blue', 'darkred', 'purple', 'yellowgreen', 'darkblue', 'firebrick' ];
 // SSL Certs
 var ssl_options = { 
     key:  fs.readFileSync('/etc/ssl/private/snakebyte.net.key'), 
@@ -67,6 +69,16 @@ function fromat_time(dt) {
     if (hour   == 0) { hour = 12;        }
     return (dt.getHours() < 10 ? '0' + hour : hour) + ':' + (dt.getMinutes() < 10 ? '0' + dt.getMinutes() + " " + ap : dt.getMinutes() + " " + ap);
 }
+
+ Array.prototype.removeByValue = function (val) {
+    for (var i = 0; i < this.length; i++) {
+       var c = this[i];
+       if (c == val || (val.equals && val.equals(c))) {
+          this.splice(i, 1);
+          break;
+       }
+    }
+ };
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,6 +119,9 @@ setInterval(function(){
     }
 }, 100);
 */
+function broadcast_clientlist() {
+    var users = io.sockets.clients();
+}
 
 
 // when a user connects
@@ -122,13 +137,22 @@ io.sockets.on('connection', function (socket) {
     var userColor = false;
     var userSelect = false;
 
-    socket.emit('clientlist', {white: client_white.player_name, black: client_black.player_name });
-        
+    socket.emit('clientlist', {white: client_white.player_name, black: client_black.player_name, user_list: user_names });
+
+    socket.on('namecheck', function(data) {
+        for(var i = 0; i < user_names.length; i++) {
+            if(user_names[i] == data.player_name) {
+                socket.emit('namecheck', {error: 'Username already in use.'});
+                return false;
+            }
+        }
+        socket.emit('namecheck', {player_name: data.player_name, player_select: data.player_select});
+
+    });
+
     // when the user sends a user configuration request
     socket.on('userconfig', function(userconfig) {
         // update their user name
-
-
         userName = userconfig.player_name;
         userSelect = userconfig.player_select;
         // get random color
@@ -149,8 +173,11 @@ io.sockets.on('connection', function (socket) {
             } else { userSelect = 'spectator'; }
         }
 
+        // add username to global list of users for checking availability
+        user_names.push(userName);
+
         // send the user their asigned userinfo
-        socket.set('userName', userName, function () { socket.emit('userinfo', {color: userColor, name: userName}); });
+        socket.set('userName', userName, function () { socket.emit('userinfo', {color: userColor, name: userName, user_list: user_names}); });
 
         // create a message to alert all other users of the newly connected player
         var msg = {
@@ -180,8 +207,8 @@ io.sockets.on('connection', function (socket) {
             }, 5000);
         }, 750);
 
-        socket.emit('clientlist', {white: client_white.player_name, black: client_black.player_name });
-        socket.broadcast.emit('clientlist', {white: client_white.player_name, black: client_black.player_name });
+        socket.emit('clientlist', {white: client_white.player_name, black: client_black.player_name, user_list: user_names  });
+        socket.broadcast.emit('clientlist', {white: client_white.player_name, black: client_black.player_name, user_list: user_names  });
 
         // log new user to server console
         console.log(fromat_time(new Date()) + ' - User is known as "' + userName + '" with ' + userColor + ' color');
@@ -209,6 +236,7 @@ io.sockets.on('connection', function (socket) {
         // broadcast message to all connected clients
         socket.emit('chatmessage', {msg: msg});
         socket.broadcast.emit('chatmessage', {msg: msg});
+        console.log(message);
     });
 
     // when a user disconnects
@@ -220,7 +248,9 @@ io.sockets.on('connection', function (socket) {
             // if the user isnt the black or white player
             if((clients[index] != client_white) && (clients[index] != client_black)) {
                 // push back user's color to be reused by another user
-                colors.push(userColor);
+                if(userColor != 'white' && userColor != 'black') {
+                   colors.push(userColor); 
+                }
             }
 
             if(client_black) {
@@ -243,6 +273,8 @@ io.sockets.on('connection', function (socket) {
 
             // remove user from the list of connected clients
             clients.splice(index, 1);
+            // remove the username from the list of availible usernames
+            user_names.removeByValue(userName);
 
 
             
@@ -257,7 +289,8 @@ io.sockets.on('connection', function (socket) {
             chat_history = chat_history.slice(-100);  
 
 
-            socket.broadcast.emit('clientlist', {white: client_white.player_name, black: client_black.player_name });
+            socket.broadcast.emit('clientlist', {white: client_white.player_name, black: client_black.player_name, user_list: user_names });
+
             // broadcast the message to all users
             socket.broadcast.emit('chatmessage', {msg: msg});
             
