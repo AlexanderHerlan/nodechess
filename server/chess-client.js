@@ -7,7 +7,7 @@ var chess_client = function () {
 	var moveCount;
 
 	this.set_state = function (game_state) {
-		
+
 
 	}
 
@@ -39,7 +39,7 @@ var chess_client = function () {
 		}
 	}
 
-	this.draw_pieces = function(chesspiece_stage, chessboard) {
+	this.draw_pieces = function(chesspiece_stage, chessboard, clientcolor) {
 		that.chess_board = chessboard;
 		//reset the board behind the chess pieces. 
 		//that.draw_board(stage);
@@ -121,7 +121,9 @@ var chess_client = function () {
 				    }
 				    frame = SpriteSheetUtils.extractFrame(spritesheet,framenumber);
 				    bitmap = new Bitmap(frame);
-				    bitmap.onPress = this.drag_handler;
+				    if(clientcolor == 'white') {
+				    	bitmap.onPress = this.drag_handler;
+				    }
 		    		bitmap.x = column;
 		    		bitmap.y = row;
 		    		//bitmap.regX = 32;
@@ -145,7 +147,9 @@ var chess_client = function () {
 				    }
 				    frame = SpriteSheetUtils.extractFrame(spritesheet,framenumber);
 				    bitmap = new Bitmap(frame);
-				    bitmap.onPress = this.drag_handler;
+				    if(clientcolor == 'black') {
+				    	bitmap.onPress = this.drag_handler;
+					}
 		    		bitmap.x = column;
 		    		bitmap.y = row;
 		    		//bitmap.regX = 32;

@@ -84,8 +84,10 @@ function init() {
     });
 
     socket.on('userdrag', function (mouse) {
-        chesspiece_stage.children[mouse.p].x = mouse.x - 32;
-        chesspiece_stage.children[mouse.p].y = mouse.y - 32;
+        if(chesspiece_stage.children[mouse.p] != undefined) {
+            chesspiece_stage.children[mouse.p].x = mouse.x - 32;
+            chesspiece_stage.children[mouse.p].y = mouse.y - 32;
+        }
         chesspiece_stage.update();
     });
 
@@ -131,7 +133,7 @@ function init() {
 
     socket.on('boardstate', function (board) {
         console.log("Recieved board state");
-        chess_client.draw_pieces(chesspiece_stage, board.data);
+        chess_client.draw_pieces(chesspiece_stage, board.data, board.clientcolor);
         //chess_board = board.data;
     });
 

@@ -201,9 +201,9 @@ io.sockets.on('connection', function (socket) {
         // (moral of the story, dont try to load remote data into <canvas>
         // using easeljs immediately at page-load, it will fail sometimes, not others...)
         setTimeout(function(){
-            socket.emit('boardstate', {data: chess.board});
+            socket.emit('boardstate', {data: chess.board, clientcolor:userSelect});
             setTimeout(function(){
-                socket.emit('boardstate', {data: chess.board});
+                socket.emit('boardstate', {data: chess.board, clientcolor:userSelect});
             }, 5000);
         }, 750);
 
