@@ -110,7 +110,7 @@ function init() {
                 $('#player_b').attr('disabled',false);
             }
         }
-        console.log(clientlist.user_list);
+
         var buddy_list = '<h3>Spectators:</h3> ';
         if(clientlist.user_list.length != undefined) {
             for(var i = 0; i < clientlist.user_list.length; i++) {
