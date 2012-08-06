@@ -106,7 +106,8 @@ $route = new routing();
 						</div>
 						<input type="text" value="" id="chesschat_input" name="chesschat_input">
 					</div>
-				</div
+				</div>
+
 			</div>
 		</div>
 		<footer>

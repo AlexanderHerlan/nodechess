@@ -312,7 +312,7 @@ li,ul {
 }
 
 #chessgame {
-  width:512px;
+  width:832px;
   height:512px;
   position: absolute;
   left: 50%;
