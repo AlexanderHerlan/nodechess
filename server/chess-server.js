@@ -51,6 +51,9 @@ chess_logic.prototype.restart = function() {
                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                  this.WHITE_PAWN, this.WHITE_PAWN, this.WHITE_PAWN, this.WHITE_PAWN, this.WHITE_PAWN, this.WHITE_PAWN, this.WHITE_PAWN, this.WHITE_PAWN, 0, 0, 0, 0, 0, 0, 0, 0,
                  this.WHITE_ROOK, this.WHITE_KNIGHT, this.WHITE_BISHOP, this.WHITE_QUEEN, this.WHITE_KING, this.WHITE_BISHOP, this.WHITE_KNIGHT, this.WHITE_ROOK, 0, 0, 0, 0, 0, 0, 0, 0];
+
+    self.currentPlayer = 0x0;
+    self.castleRights = 0xF; // 4 bits to track castling on each side for both players
     return true;
 }
 
