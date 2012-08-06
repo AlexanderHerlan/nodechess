@@ -1,14 +1,21 @@
-
+function isEven(x) { return (x%2)==0; }
+function isOdd(x) { return !isEven(x); }
 
 
 var chess_client = function () {
-	var that = this;
+	var self = this;
+	var socket;
 	var chess_board;
 	var moveCount;
+	var move;
+	var piece_size;
 
-	this.set_state = function (game_state) {
-
-
+	this.set_state = function (gamestate) {
+		if(!gamestate) { // set intial settings
+			self.moveCount = 0;
+			self.move = 0;
+			self.piece_size = 64;
+		}
 	}
 
 	this.draw_board = function (stage) {
@@ -27,22 +34,38 @@ var chess_client = function () {
 	}
 
 	this.drag_handler = function(mouseEvent) {
+		var piece_size = 64;
 		// this is where onClick before drag code goes
 		
 		var piece = chesspiece_stage.getChildIndex(mouseEvent.target);
-		console.log("Target piece: " + piece);
+		var fx = (mouseEvent.stageX / piece_size) | 0;
+		var fy = (mouseEvent.stageY / piece_size) | 0;
 		mouseEvent.onMouseMove = function(mouseEvent) { 
 			this.target.x = mouseEvent.stageX - 32;
 			this.target.y = mouseEvent.stageY - 32;
-			that.socket.emit('userdrag', {p: piece, x: mouseEvent.stageX, y: mouseEvent.stageY});
+			self.socket.emit('userdrag', {p: piece, x: mouseEvent.stageX, y: mouseEvent.stageY});
 			chesspiece_stage.update();
+		}
+		mouseEvent.onMouseUp = function(mouseEvent) {
+			var tx = (mouseEvent.stageX / piece_size) | 0;
+			var ty = (mouseEvent.stageY / piece_size) | 0;
+			var from = fy.toString() + fx.toString();
+			var to = + ty.toString() + tx.toString();
+
+			if(from != to) {
+				console.log("Move " + piece + " from " + from + " to " + to);
+				self.socket.emit('chessmove', {p: piece, f: from, t: to});
+			} else {
+				console.log("Move " + piece + " from " + from + " to " + to);
+				console.log("Invalid Move");
+			}
 		}
 	}
 
-	this.draw_pieces = function(chesspiece_stage, chessboard, clientcolor) {
-		that.chess_board = chessboard;
+	this.draw_pieces = function(chesspiece_stage, chessboard, clientcolor, turn) {
+		self.chess_board = chessboard;
 		//reset the board behind the chess pieces. 
-		//that.draw_board(stage);
+		//self.draw_board(stage);
 		//set the size of each square on the board
 		var piece_size = 64;
 
@@ -121,7 +144,7 @@ var chess_client = function () {
 				    }
 				    frame = SpriteSheetUtils.extractFrame(spritesheet,framenumber);
 				    bitmap = new Bitmap(frame);
-				    if(clientcolor == 'white') {
+				    if(isEven(turn) && clientcolor == 'white') {
 				    	bitmap.onPress = this.drag_handler;
 				    }
 		    		bitmap.x = column;
@@ -147,7 +170,7 @@ var chess_client = function () {
 				    }
 				    frame = SpriteSheetUtils.extractFrame(spritesheet,framenumber);
 				    bitmap = new Bitmap(frame);
-				    if(clientcolor == 'black') {
+				    if(isOdd(turn) && clientcolor == 'black') {
 				    	bitmap.onPress = this.drag_handler;
 					}
 		    		bitmap.x = column;

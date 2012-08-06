@@ -321,6 +321,17 @@ li,ul {
   margin-top:-256px;
 }
 
+#turn_reminder {
+  position: absolute;
+  width:100%;
+  color: red;
+  font-weight: bold;
+  font-size: 28px;
+  text-align: center;
+  margin-top: 10px;
+  z-index: 999;
+}
+
 #chessboard_canvas {
 
 }
@@ -446,11 +457,14 @@ li,ul {
   height: 52px;
 }
 #player_black h3 {
-  padding-bottom: 4px;
+  padding-bottom: 0px;
 }
 #player_black div {
+  margin-top: -7px;
   text-align: center;
   font-weight: bold;
+  font-size: 26px;
+  overflow: hidden;
 }
 #player_white {
   background-color: #fff;
@@ -458,11 +472,13 @@ li,ul {
   height: 52px;
 }
 #player_white  h3 {
-  padding-bottom: 4px;
+  padding-bottom: 0px;
 }
 #player_white div {
+  margin-top: -7px;
   text-align: center;
   font-weight: bold;
+  font-size: 26px;
 }
 #chesshistory {
   position: absolute;

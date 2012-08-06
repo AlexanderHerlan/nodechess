@@ -18,6 +18,7 @@ var chess_board;
 //socket.io
 var socket;
 
+var userColor;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Helper functions
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,6 +54,7 @@ function init() {
     // draw the chessboard
 
     chess_client = new chess_client();
+    chess_client.set_state();
     chess_client.draw_board(chessboard_stage);
 
     // connect to socket.io server
@@ -133,7 +135,23 @@ function init() {
 
     socket.on('boardstate', function (board) {
         console.log("Recieved board state");
-        chess_client.draw_pieces(chesspiece_stage, board.data, board.clientcolor);
+        console.log(board);
+        console.log(userColor);
+        console.log(isEven(board.turn));
+        chess_client.draw_pieces(chesspiece_stage, board.data, userColor, board.turn);
+        if(isEven(board.turn)) {
+            if(userColor == 'white') {
+               $('#turn_reminder').html('Your turn white!'); 
+            } else { $('#turn_reminder').html(''); }
+        }
+
+        if(isOdd(board.turn)) {
+            if(userColor == 'black') {
+                $('#turn_reminder').html('Your turn black!');
+            } else { $('#turn_reminder').html(''); }
+        }
+
+        
         //chess_board = board.data;
     });
 
@@ -143,6 +161,7 @@ function init() {
             status.html('Playing as: <span style="color:' + data.color + ';font-weight:bold">' 
                                                           + data.name + '</span>');
             input.removeAttr('disabled').focus();
+            userColor = data.color;
         } else {
             $('#player_name_error').html("(" + data.error + ")");
         }

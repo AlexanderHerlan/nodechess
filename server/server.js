@@ -17,7 +17,7 @@ process.title = 'node-chess';
 var http = require('http'), 
     express = require('express'),
     socketio = require('socket.io'),
-    chess = require('./chess-server.js'),
+    chessgame = require('./chess-server.js'),
     fs = require('fs');
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -113,12 +113,15 @@ io.configure(function() {
 
 /* function for testing latency of websocket transport
 setInterval(function(){
-    var testboard = shuffle(chess.board);
+    var testboard = shuffle(chessgame.board);
     for(var i = 0; i < clients.length; i++) {
         clients[i].emit('boardstate', {data: testboard});
     }
 }, 100);
 */
+
+
+
 function broadcast_clientlist() {
     var users = io.sockets.clients();
 }
@@ -126,12 +129,14 @@ function broadcast_clientlist() {
 
 // when a user connects
 io.sockets.on('connection', function (socket) {
+
     // log the event to the server console
     console.log(fromat_time(new Date()) + ' - User connected');
 
     // we need to know the connecting user's index in the 'clients' array
     // to remove them later when they disconnect
     var index = clients.push(socket) - 1;
+
 
     var userName = false;
     var userColor = false;
@@ -201,9 +206,9 @@ io.sockets.on('connection', function (socket) {
         // (moral of the story, dont try to load remote data into <canvas>
         // using easeljs immediately at page-load, it will fail sometimes, not others...)
         setTimeout(function(){
-            socket.emit('boardstate', {data: chess.board, clientcolor:userSelect});
+            socket.emit('boardstate', {data: chessgame.board, turn: chessgame.moveCount});
             setTimeout(function(){
-                socket.emit('boardstate', {data: chess.board, clientcolor:userSelect});
+                socket.emit('boardstate', {data: chessgame.board, turn: chessgame.moveCount});
             }, 5000);
         }, 750);
 
@@ -216,6 +221,23 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('userdrag', function(mouse) {
         socket.broadcast.emit('userdrag', {p: mouse.p, x: mouse.x, y: mouse.y})
+    });
+
+    socket.on('chessmove', function(move) {
+        console.log(fromat_time(new Date()) + ' - ' + socket.player_name + " moved from " + move.f + " to " + move.t);
+
+        var color;
+        if(chessgame.validateMove(move.f, move.t)) {
+            console.log("Valid Move");
+
+            socket.emit('boardstate', {data: chessgame.board, turn: chessgame.moveCount});
+            socket.broadcast.emit('boardstate', {data: chessgame.board, turn: chessgame.moveCount});
+
+        } else {
+            socket.emit('boardstate', {data: chessgame.board, turn: chessgame.moveCount});
+            socket.broadcast.emit('boardstate', {data: chessgame.board, turn: chessgame.moveCount});
+            console.log("Invalid Move");
+        }
     });
 
     // when recieving a chat message from a user
@@ -236,7 +258,6 @@ io.sockets.on('connection', function (socket) {
         // broadcast message to all connected clients
         socket.emit('chatmessage', {msg: msg});
         socket.broadcast.emit('chatmessage', {msg: msg});
-        console.log(message);
     });
 
     // when a user disconnects
@@ -258,6 +279,10 @@ io.sockets.on('connection', function (socket) {
                     client_black.player_name = false;
                     client_black = false;
                     console.log(fromat_time(new Date()) + ' - Black player ' + userName + ' has left the game!');
+                    
+                    if(chessgame.restart()) {
+                        socket.broadcast.emit('boardstate', {data: chessgame.board, turn: chessgame.moveCount});
+                    }
                 }
             }
 
@@ -266,6 +291,9 @@ io.sockets.on('connection', function (socket) {
                     console.log(fromat_time(new Date()) + ' - White player ' + userName + ' has left the game!');
                     client_white.player_name = false;
                     client_white = false;
+                    if(chessgame.restart()) {
+                        socket.broadcast.emit('boardstate', {data: chessgame.board, turn: chessgame.moveCount});
+                    }
                 }
             }
 

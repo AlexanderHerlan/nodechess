@@ -43,7 +43,7 @@ $route = new routing();
 
 	<div id="container">
 		<header>
-	
+			<div id="turn_reminder"></div>
 		</header>
 		<div id="main" role="main">
 			<div id="chessgame">
@@ -90,7 +90,7 @@ $route = new routing();
 									<div class="name_white"></div>
 								</div>
 							</div>
-							<div id="spectators_list"></div>
+							<div id="spectators_list"><h3>Spectators:</h3></div>
 						</div>
 					</div>
 					<div id="chesshistory">
