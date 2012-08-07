@@ -1,6 +1,11 @@
-function chess_logic () {
+function chess_server () {
     this.clients;
+
     this.moveCount= 0;
+
+    this.currentPlayer = 0x0;
+    this.castleRights = 0xF; // 4 bits to track castling on each side for both players
+
     this.WHITE = 0x0;
     this.BLACK = 0x8;
 
@@ -34,12 +39,11 @@ function chess_logic () {
                  this.WHITE_PAWN, this.WHITE_PAWN, this.WHITE_PAWN, this.WHITE_PAWN, this.WHITE_PAWN, this.WHITE_PAWN, this.WHITE_PAWN, this.WHITE_PAWN, 0, 0, 0, 0, 0, 0, 0, 0,
                  this.WHITE_ROOK, this.WHITE_KNIGHT, this.WHITE_BISHOP, this.WHITE_QUEEN, this.WHITE_KING, this.WHITE_BISHOP, this.WHITE_KNIGHT, this.WHITE_ROOK, 0, 0, 0, 0, 0, 0, 0, 0];
 
-    this.currentPlayer = 0x0;
-    this.castleRights = 0xF; // 4 bits to track castling on each side for both players
+
 
 }
 
-chess_logic.prototype.restart = function() {
+chess_server.prototype.restart = function() {
     var self = this;
 
     self.moveCount = 0;
@@ -58,7 +62,7 @@ chess_logic.prototype.restart = function() {
 }
 
 
-chess_logic.prototype.validateMove = function (from, to) {
+chess_server.prototype.validateMove = function (from, to) {
     var self = this;
 
     from = parseInt(from, 16);
@@ -67,7 +71,7 @@ chess_logic.prototype.validateMove = function (from, to) {
     return self.isPseudoLegal(from, to, self.currentPlayer) && !self.checkAfterMove(from, to, self.currentPlayer);
 }
 
-chess_logic.prototype.isPseudoLegal = function (from, to, currentPlayer) {
+chess_server.prototype.isPseudoLegal = function (from, to, currentPlayer) {
     var self = this;
 
     var fromPiece = self.board[from] || 0;
@@ -186,7 +190,7 @@ chess_logic.prototype.isPseudoLegal = function (from, to, currentPlayer) {
 
 
 
-chess_logic.prototype.makeMove = function(from, to) {
+chess_server.prototype.makeMove = function(from, to) {
     var self = this;
     //from = parseInt(from, 16);
     //to = parseInt(to, 16);
@@ -242,7 +246,7 @@ chess_logic.prototype.makeMove = function(from, to) {
 
 
 
-chess_logic.prototype.unMakeMove = function(from, to, stateData) {
+chess_server.prototype.unMakeMove = function(from, to, stateData) {
     var self = this;
 
     self.board[from] = self.board[to];
@@ -264,7 +268,7 @@ chess_logic.prototype.unMakeMove = function(from, to, stateData) {
     return true;
 }
 
-chess_logic.prototype.checkAfterMove = function (from, to, currentPlayer) {
+chess_server.prototype.checkAfterMove = function (from, to, currentPlayer) {
     var self = this;
 
     var stateData = self.makeMove(from, to);
@@ -285,7 +289,7 @@ chess_logic.prototype.checkAfterMove = function (from, to, currentPlayer) {
     return isKingUnderAttack;
 }
 
-chess_logic.prototype.isSquareUnderAttack = function (square, currentPlayer) {
+chess_server.prototype.isSquareUnderAttack = function (square, currentPlayer) {
     var self = this;
 
     for( var i = 0 ; i < 128 ; i++ ){
@@ -298,4 +302,4 @@ chess_logic.prototype.isSquareUnderAttack = function (square, currentPlayer) {
     return false;
 }
 
-module.exports = new chess_logic();
+module.exports = new chess_server();

@@ -25,7 +25,8 @@ var userColor;
 function hasWhiteSpace(s) {
   return s.indexOf(' ') >= 0; 
 }
-
+function isEven(x) { return (x%2)==0; }
+function isOdd(x) { return !isEven(x); }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // App Entry Point:
@@ -53,14 +54,19 @@ function init() {
     Ticker.addListener(this);
     // draw the chessboard
 
-    chess_client = new chess_client();
-    chess_client.set_state();
-    chess_client.draw_board(chessboard_stage);
-
     // connect to socket.io server
+
     socket = io.connect('https://snakebyte.net:6969');
+
+
+    chess_client = new chess_client();
+    chess_client.init_pieces();
     // give the chess client the socket.
     chess_client.socket = socket;
+    chess_client.draw_board(chessboard_stage);
+
+
+
 
     socket.on('connect', function () {
         // first we want users to establish the user's name
@@ -148,7 +154,7 @@ function init() {
             } else { $('#turn_reminder').html(''); }
         }
 
-        
+        chesspiece_stage.update();
         //chess_board = board.data;
     });
 
@@ -402,6 +408,6 @@ function init() {
 
 function tick() {
     //re-render the stage
-    chesspiece_stage.update();
-    chessboard_stage.update();
+    //chesspiece_stage.update();
+    //chessboard_stage.update();
 }
