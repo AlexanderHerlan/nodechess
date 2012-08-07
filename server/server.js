@@ -203,12 +203,19 @@ io.sockets.on('connection', function (socket) {
         // send board state w/ a delay because EaselJS is a piece of shit
         // (moral of the story, dont try to load remote data into <canvas>
         // using easeljs immediately at page-load, it will fail sometimes, not others...)
+        socket.emit('boardstate', {data: chessgame.board, turn: chessgame.moveCount});
         setTimeout(function(){
             socket.emit('boardstate', {data: chessgame.board, turn: chessgame.moveCount});
             setTimeout(function(){
                 socket.emit('boardstate', {data: chessgame.board, turn: chessgame.moveCount});
-            }, 5000);
-        }, 750);
+                setTimeout(function(){
+                    socket.emit('boardstate', {data: chessgame.board, turn: chessgame.moveCount});
+                    setTimeout(function(){
+                        socket.emit('boardstate', {data: chessgame.board, turn: chessgame.moveCount});
+                    }, 750);
+                }, 500);
+            }, 250);
+        }, 250);
 
         socket.emit('clientlist', {white: client_white.player_name, black: client_black.player_name, user_list: user_names  });
         socket.broadcast.emit('clientlist', {white: client_white.player_name, black: client_black.player_name, user_list: user_names  });

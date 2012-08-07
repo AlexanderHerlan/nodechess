@@ -135,9 +135,6 @@ function init() {
 
     socket.on('boardstate', function (board) {
         console.log("Recieved board state");
-        console.log(board);
-        console.log(userColor);
-        console.log(isEven(board.turn));
         chess_client.draw_pieces(chesspiece_stage, board.data, userColor, board.turn);
         if(isEven(board.turn)) {
             if(userColor == 'white') {
