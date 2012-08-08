@@ -35,8 +35,26 @@ WEB_SOCKET_SWF_LOCATION='server/WebSocketMain.swf';
 
 chesspiece_stage.mouseEventsEnabled = true;
 
-function init() {
+$(function () {
     "use strict";
+
+    var preloader = new PxLoader(), 
+        img_chessboard = preloader.addImage('img/chessboard.png'), 
+        img_chesspieces = preloader.addImage('img/pieces.png'); 
+     
+    // callback that will be run once images are ready 
+    preloader.addCompletionListener(function() { 
+        console.log('Game resources preloaded');
+        // once resources are loaded, connect to remote server.
+        start_game();
+    }); 
+    
+    // begin downloading images 
+    preloader.start(); 
+});
+
+
+function start_game() {
     // for better performance - to avoid searching in DOM
     var content = $('#chesschat_buffer');
     var input = $('#chesschat_input');
@@ -49,15 +67,8 @@ function init() {
     // make form elements pretty w/ uniformjs
     $("select, input:checkbox, input:radio, input:file, button, input:text").uniform();
 
-    // setup ueaseljs stuff.
-    Ticker.setFPS(30);
-    Ticker.addListener(this);
-    // draw the chessboard
 
-    // connect to socket.io server
-
-    socket = io.connect('https://snakebyte.net:6969');
-
+    self.socket = io.connect('https://snakebyte.net:6969');
 
     chess_client = new chess_client();
     chess_client.init_pieces();
@@ -74,7 +85,7 @@ function init() {
         status.text('Initializing...');
     });
 
-    socket.on('namecheck', function(data) {
+    socket.on('uservalidation', function(data) {
         if(!data.error) {
             if (myName === false) {
                 myName = data.player_name;
@@ -100,7 +111,7 @@ function init() {
     });
 
     socket.on('clientlist', function (clientlist) {
-        console.log('ClientList recieved');
+        console.log('Client List recieved');
         if($('.name_white')) {
             if(clientlist.white) { 
                  $('.name_white').html(clientlist.white);
@@ -135,23 +146,33 @@ function init() {
         if(clientlist.black == undefined) { clientlist.black = '&lt;empty&gt;'; }
         $('.name_black').html(clientlist.black);
         $('.name_black').html(clientlist.black);
-
-        console.log("Connected to Chess server.");
     });
 
-    socket.on('boardstate', function (board) {
-        console.log("Recieved board state");
-        chess_client.draw_pieces(chesspiece_stage, board.data, userColor, board.turn);
-        if(isEven(board.turn)) {
+    socket.on('gamestate', function (state) {
+        console.log('Recieved game state');
+
+
+        chess_client.draw_pieces(chesspiece_stage, state.board, userColor, state.turn);
+        if(isEven(state.turn)) {
             if(userColor == 'white') {
                $('#turn_reminder').html('Your turn white!'); 
             } else { $('#turn_reminder').html(''); }
         }
 
-        if(isOdd(board.turn)) {
+        if(isOdd(state.turn)) {
             if(userColor == 'black') {
                 $('#turn_reminder').html('Your turn black!');
             } else { $('#turn_reminder').html(''); }
+        }
+
+        if(state.error) {
+            console.log(state.error);
+            $('#quick_overlay').html(state.error);
+            $('#quick_overlay').show();
+            setTimeout(function(){
+                $('#quick_overlay').fadeOut('slow');
+            },500)
+            
         }
 
         chesspiece_stage.update();
@@ -277,14 +298,14 @@ function init() {
         }
     });
 
-	var settings = {
-		stickToBottom: true,
-		showArrows: false,
-		hideFocus: true
-	};
-	var pane = $('.scroll-pane');
-	pane.jScrollPane(settings);
-	var api = pane.data('jsp');
+    var settings = {
+        stickToBottom: true,
+        showArrows: false,
+        hideFocus: true
+    };
+    var pane = $('.scroll-pane');
+    pane.jScrollPane(settings);
+    var api = pane.data('jsp');
 
 
     function addMessage(author, message, color, dt) {
@@ -354,7 +375,7 @@ function init() {
                /^\w+$/.test(player_name) == true &&
                player_select != undefined) {     //tests that the string is only a-z
                 
-                socket.emit('namecheck', {player_name: player_name, player_select: player_select});
+                socket.emit('uservalidation', {player_name: player_name, player_select: player_select});
                 /*
                 if (myName === false) {
                     myName = player_name;
@@ -395,19 +416,27 @@ function init() {
         $("input[name=player_select]").change(function () {
             $('#frm_player_details').submit();
         });
-
-
     }
+}
 
-};
+
+
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // EaselJS loop
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function init() {
+    // setup ueaseljs stuff.
+    Ticker.setFPS(24);
+    Ticker.addListener(this);
+    // draw the chessboard
+
+    // connect to socket.io server
+}
 
 function tick() {
     //re-render the stage
-    //chesspiece_stage.update();
-    //chessboard_stage.update();
+    chesspiece_stage.update();
+    chessboard_stage.update();
 }

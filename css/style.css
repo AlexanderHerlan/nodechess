@@ -556,8 +556,32 @@ li,ul {
     right:0px;
     z-index:100;
 }
+.quick_overlay {
+  width: 192px;
+  height: 28px;
+  background:transparent url(../img/overlaybg.png) repeat top left;
+  z-index:100;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-left: -256px;
+  margin-top: -22px;
+  color: #b10000;
+  border-radius: 16px;
+  -moz-border-radius: 16px;
+  -webkit-border-radius:16px;
+  -khtml-border-radius:16px;
+  -moz-box-shadow: 0 1px 5px #333;
+  -webkit-box-shadow: 0 1px 5px #333;
+  text-align: center;
+  padding: 5px;
+  font-weight: bold;
+  font-size: 16px;
+  padding-top: 12px;
+}
 
 #msg_box {
+    border-radius: 16px;
     -moz-border-radius: 16px;
     -webkit-border-radius:16px;
     -khtml-border-radius:16px;
@@ -618,6 +642,9 @@ a.boxclose{
     padding:4px;
     background-color:#747f85;
     color:#ddd;
+
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
     -moz-border-radius:20px 20px 0px 0px;
     -webkit-border-top-left-radius: 15px;
     -webkit-border-top-right-radius: 15px;

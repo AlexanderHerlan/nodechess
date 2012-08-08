@@ -113,17 +113,10 @@ io.configure(function() {
 setInterval(function(){
     var testboard = shuffle(chess_server.board);
     for(var i = 0; i < clients.length; i++) {
-        clients[i].emit('boardstate', {data: testboard});
+        clients[i].emit('gamestate', {board: testboard});
     }
 }, 100);
 */
-
-
-
-function broadcast_clientlist() {
-    var users = io.sockets.clients();
-}
-
 
 // when a user connects
 io.sockets.on('connection', function (socket) {
@@ -142,14 +135,14 @@ io.sockets.on('connection', function (socket) {
 
     socket.emit('clientlist', {white: client_white.player_name, black: client_black.player_name, user_list: user_names });
 
-    socket.on('namecheck', function(data) {
+    socket.on('uservalidation', function(data) {
         for(var i = 0; i < user_names.length; i++) {
             if(user_names[i] == data.player_name) {
                 socket.emit('namecheck', {error: 'Username already in use.'});
                 return false;
             }
         }
-        socket.emit('namecheck', {player_name: data.player_name, player_select: data.player_select});
+        socket.emit('uservalidation', {player_name: data.player_name, player_select: data.player_select});
 
     });
 
@@ -203,16 +196,16 @@ io.sockets.on('connection', function (socket) {
         // send board state w/ a delay because EaselJS is a piece of shit
         // (moral of the story, dont try to load remote data into <canvas>
         // using easeljs immediately at page-load, it will fail sometimes, not others...)
-        socket.emit('boardstate', {data: chess_server.board, turn: chess_server.moveCount});
+        socket.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount});
         /*
         setTimeout(function(){
-            socket.emit('boardstate', {data: chess_server.board, turn: chess_server.moveCount});
+            socket.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount});
             setTimeout(function(){
-                socket.emit('boardstate', {data: chess_server.board, turn: chess_server.moveCount});
+                socket.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount});
                 setTimeout(function(){
-                    socket.emit('boardstate', {data: chess_server.board, turn: chess_server.moveCount});
+                    socket.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount});
                     setTimeout(function(){
-                        socket.emit('boardstate', {data: chess_server.board, turn: chess_server.moveCount});
+                        socket.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount});
                     }, 750);
                 }, 500);
             }, 250);
@@ -233,16 +226,15 @@ io.sockets.on('connection', function (socket) {
     socket.on('chessmove', function(move) {
         console.log(fromat_time(new Date()) + ' - ' + socket.player_name + " moved from " + move.f + " to " + move.t);
 
-        var color;
         if(chess_server.validateMove(move.f, move.t)) {
             console.log("Valid Move");
 
-            socket.emit('boardstate', {data: chess_server.board, turn: chess_server.moveCount});
-            socket.broadcast.emit('boardstate', {data: chess_server.board, turn: chess_server.moveCount});
+            socket.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount});
+            socket.broadcast.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount});
 
         } else {
-            socket.emit('boardstate', {data: chess_server.board, turn: chess_server.moveCount});
-            socket.broadcast.emit('boardstate', {data: chess_server.board, turn: chess_server.moveCount});
+            socket.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount, error: 'Invalid Move'});
+            socket.broadcast.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount});
             console.log("Invalid Move");
         }
     });
@@ -288,7 +280,7 @@ io.sockets.on('connection', function (socket) {
                     console.log(fromat_time(new Date()) + ' - Black player ' + userName + ' has left the game!');
                     
                     if(chess_server.restart()) {
-                        socket.broadcast.emit('boardstate', {data: chess_server.board, turn: chess_server.moveCount});
+                        socket.broadcast.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount});
                     }
                 }
             }
@@ -299,7 +291,7 @@ io.sockets.on('connection', function (socket) {
                     client_white.player_name = false;
                     client_white = false;
                     if(chess_server.restart()) {
-                        socket.broadcast.emit('boardstate', {data: chess_server.board, turn: chess_server.moveCount});
+                        socket.broadcast.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount});
                     }
                 }
             }

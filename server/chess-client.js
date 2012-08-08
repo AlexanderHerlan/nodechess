@@ -152,10 +152,11 @@ chess_client.prototype.draw_pieces = function(stage, board, clientcolor, turn) {
 			bitmap = new Bitmap(frame);
     		bitmap.x = column;
     		bitmap.y = row;
-
-			if(isEven(turn) && clientcolor == 'white' && framenumber < 6) {
+    		//&& clientcolor == 'white'
+			if(isEven(turn)  && framenumber < 6) {
 				bitmap.onPress = this.drag_handler;
-			} else if(isOdd(turn) && clientcolor == 'black' && framenumber > 5) {
+			//&& clientcolor == 'black'
+			} else if(isOdd(turn)  && framenumber > 5) {
 				bitmap.onPress = this.drag_handler;
 			}
 
@@ -171,6 +172,10 @@ chess_client.prototype.draw_pieces = function(stage, board, clientcolor, turn) {
 
 
 chess_client.prototype.drag_handler = function(mouseEvent) {
+
+	// disable text selection to truly hide mouse cursor in chrome
+	document.onselectstart = function(){ return false; }
+
 	var piece_size = 64;
 	// this is where onClick before drag code goes
 	
@@ -196,5 +201,8 @@ chess_client.prototype.drag_handler = function(mouseEvent) {
 			console.log("Move " + piece + " from " + from + " to " + to);
 			console.log("Invalid Move");
 		}
+		// re enable text selection
+		document.onselectstart = function(){ return true; }
+		chesspiece_stage.update();
 	}
 }

@@ -17,11 +17,14 @@ $route = new routing();
 	<link rel="stylesheet" href="<?=$route->root?>css/style.css">
 	<link rel="stylesheet" href="<?=$route->root?>js/mylibs/css/uniform.default.css" type="text/css" media="screen" charset="utf-8" />
 	<script src="<?=$route->root?>js/libs/modernizr-2.5.3.min.js"></script>
+	<script src="<?=$route->root?>js/libs/PxLoader.js"></script>
+	<script src="<?=$route->root?>js/libs/PxLoaderImage.js"></script>
 </head>
 
 <body onload="init()">
    <!--[if lt IE 7]><p class=chromeframe>Your browser is extremely <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser now</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
     <div class="overlay" id="overlay" style="display:none;"></div>
+    <div class="quick_overlay" id="quick_overlay" style="display:none;"></div>
     <div class="welcome_box" id="msg_box">
 		<h1 id="msg_box_title">Welcome to Chess!</h1>
 		<div id="msg_box_body">

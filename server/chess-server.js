@@ -39,8 +39,6 @@ function chess_server () {
                  this.WHITE_PAWN, this.WHITE_PAWN, this.WHITE_PAWN, this.WHITE_PAWN, this.WHITE_PAWN, this.WHITE_PAWN, this.WHITE_PAWN, this.WHITE_PAWN, 0, 0, 0, 0, 0, 0, 0, 0,
                  this.WHITE_ROOK, this.WHITE_KNIGHT, this.WHITE_BISHOP, this.WHITE_QUEEN, this.WHITE_KING, this.WHITE_BISHOP, this.WHITE_KNIGHT, this.WHITE_ROOK, 0, 0, 0, 0, 0, 0, 0, 0];
 
-
-
 }
 
 chess_server.prototype.restart = function() {
