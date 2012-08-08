@@ -38,6 +38,9 @@ chesspiece_stage.mouseEventsEnabled = true;
 $(function () {
     "use strict";
 
+    chessboard_canvas.onselectstart = function () { return false; }
+    chesspiece_canvas.onselectstart = function () { return false; }
+
     var preloader = new PxLoader(), 
         img_chessboard = preloader.addImage('img/chessboard.png'), 
         img_chesspieces = preloader.addImage('img/pieces.png'); 
@@ -104,8 +107,9 @@ function start_game() {
 
     socket.on('userdrag', function (mouse) {
         if(chesspiece_stage.children[mouse.p] != undefined) {
-            chesspiece_stage.children[mouse.p].x = mouse.x - 32;
-            chesspiece_stage.children[mouse.p].y = mouse.y - 32;
+            chesspiece_stage.children[mouse.p].x = mouse.x;
+            chesspiece_stage.children[mouse.p].y = mouse.y;
+            chesspiece_stage.children[mouse.p].rotation = -22;
         }
         chesspiece_stage.update();
     });

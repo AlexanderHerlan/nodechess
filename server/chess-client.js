@@ -150,8 +150,10 @@ chess_client.prototype.draw_pieces = function(stage, board, clientcolor, turn) {
 
 			frame = SpriteSheetUtils.extractFrame(self.spritesheet,framenumber);
 			bitmap = new Bitmap(frame);
-    		bitmap.x = column;
-    		bitmap.y = row;
+    		bitmap.x = column + 32;
+    		bitmap.y = row + 32;
+    		bitmap.regX = 32;
+    		bitmap.regY = 32;
     		//&& clientcolor == 'white'
 			if(isEven(turn)  && framenumber < 6) {
 				bitmap.onPress = this.drag_handler;
@@ -178,15 +180,16 @@ chess_client.prototype.drag_handler = function(mouseEvent) {
 
 	var piece_size = 64;
 	// this is where onClick before drag code goes
-	
+	mouseEvent.target.rotation = -22;
 	var piece = chesspiece_stage.getChildIndex(mouseEvent.target);
 	var fx = (mouseEvent.stageX / piece_size) | 0;
 	var fy = (mouseEvent.stageY / piece_size) | 0;
 	mouseEvent.onMouseMove = function(mouseEvent) { 
-		this.target.x = mouseEvent.stageX - 32;
-		this.target.y = mouseEvent.stageY - 32;
+		document.onselectstart = function(){ return false; }
+		this.target.x = mouseEvent.stageX;
+		this.target.y = mouseEvent.stageY;
 		self.socket.emit('userdrag', {p: piece, x: mouseEvent.stageX, y: mouseEvent.stageY});
-		chesspiece_stage.update();
+		//chesspiece_stage.update();
 	}
 	mouseEvent.onMouseUp = function(mouseEvent) {
 		var tx = (mouseEvent.stageX / piece_size) | 0;
@@ -200,9 +203,12 @@ chess_client.prototype.drag_handler = function(mouseEvent) {
 		} else {
 			console.log("Move " + piece + " from " + from + " to " + to);
 			console.log("Invalid Move");
+			this.target.rotation = 0;
 		}
+
 		// re enable text selection
+		
 		document.onselectstart = function(){ return true; }
-		chesspiece_stage.update();
+		//chesspiece_stage.update();
 	}
 }
