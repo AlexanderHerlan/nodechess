@@ -77,7 +77,7 @@ chess_client.prototype.init_pieces = function() {
     frames[11] = [320,64,64,64,0,0,0]; // black pawn
 
     var data = {
-		images: ["img/pieces.png"],
+		images: ["img/pieces2.png"],
 		frames: frames
 	}
 
@@ -180,12 +180,11 @@ chess_client.prototype.drag_handler = function(mouseEvent) {
 
 	var piece_size = 64;
 	// this is where onClick before drag code goes
-	mouseEvent.target.rotation = -22;
+	mouseEvent.target.rotation = -15;
 	var piece = chesspiece_stage.getChildIndex(mouseEvent.target);
 	var fx = (mouseEvent.stageX / piece_size) | 0;
 	var fy = (mouseEvent.stageY / piece_size) | 0;
 	mouseEvent.onMouseMove = function(mouseEvent) { 
-		document.onselectstart = function(){ return false; }
 		this.target.x = mouseEvent.stageX;
 		this.target.y = mouseEvent.stageY;
 		self.socket.emit('userdrag', {p: piece, x: mouseEvent.stageX, y: mouseEvent.stageY});

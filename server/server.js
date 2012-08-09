@@ -138,7 +138,7 @@ io.sockets.on('connection', function (socket) {
     socket.on('uservalidation', function(data) {
         for(var i = 0; i < user_names.length; i++) {
             if(user_names[i] == data.player_name) {
-                socket.emit('namecheck', {error: 'Username already in use.'});
+                socket.emit('uservalidation', {error: 'Username already in use.'});
                 return false;
             }
         }
@@ -197,20 +197,7 @@ io.sockets.on('connection', function (socket) {
         // (moral of the story, dont try to load remote data into <canvas>
         // using easeljs immediately at page-load, it will fail sometimes, not others...)
         socket.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount});
-        /*
-        setTimeout(function(){
-            socket.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount});
-            setTimeout(function(){
-                socket.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount});
-                setTimeout(function(){
-                    socket.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount});
-                    setTimeout(function(){
-                        socket.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount});
-                    }, 750);
-                }, 500);
-            }, 250);
-        }, 250);
-        */
+
 
         socket.emit('clientlist', {white: client_white.player_name, black: client_black.player_name, user_list: user_names  });
         socket.broadcast.emit('clientlist', {white: client_white.player_name, black: client_black.player_name, user_list: user_names  });
