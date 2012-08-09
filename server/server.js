@@ -233,9 +233,15 @@ io.sockets.on('connection', function (socket) {
             socket.broadcast.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount});
 
         } else {
-            socket.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount, error: 'Invalid Move'});
-            socket.broadcast.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount});
-            console.log("Invalid Move");
+            if(chess_server.isKingInCheck()) {
+                socket.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount, error: 'Your king is in check!'});
+                socket.broadcast.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount});
+                console.log("Your king is in check!");
+            } else {
+                socket.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount, error: 'Invalid Move'});
+                socket.broadcast.emit('gamestate', {board: chess_server.board, turn: chess_server.moveCount});
+                console.log("Invalid Move");
+            }
         }
     });
 

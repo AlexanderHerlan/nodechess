@@ -434,6 +434,7 @@ function init() {
     // setup ueaseljs stuff.
     Ticker.setFPS(24);
     Ticker.addListener(this);
+    Touch.enable(chesspiece_stage);
     // draw the chessboard
 
     // connect to socket.io server

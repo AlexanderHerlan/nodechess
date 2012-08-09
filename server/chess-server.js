@@ -266,6 +266,21 @@ chess_server.prototype.unMakeMove = function(from, to, stateData) {
     return true;
 }
 
+chess_server.prototype.isKingInCheck = function (from, to) {
+    var self = this;
+    /* Find my king */
+    for( var i = 0 ; i < 128 ; i++ ){
+        if(self.board[i] === (self.currentPlayer ? self.BLACK_KING : self.WHITE_KING) ){
+            var kingPosition = i;
+            break;
+        }
+    }
+
+    var isKingUnderAttack = self.isSquareUnderAttack(kingPosition, self.currentPlayer);
+
+    return isKingUnderAttack;
+}
+
 chess_server.prototype.checkAfterMove = function (from, to, currentPlayer) {
     var self = this;
 
