@@ -301,6 +301,7 @@ function start_game() {
         }
     });
 
+
     var settings = {
         stickToBottom: true,
         showArrows: false,
@@ -309,7 +310,6 @@ function start_game() {
     var pane = $('.scroll-pane');
     pane.jScrollPane(settings);
     var api = pane.data('jsp');
-
 
     function addMessage(author, message, color, dt) {
         if(message.substring(0,4) == "/me ") {
@@ -325,7 +325,6 @@ function start_game() {
                  + '</span> <span style="color:' + color + '">'
                  + author + ':</span> ' + message + '</p>');
         }
-
 
         api.reinitialise();
         api.scrollToBottom(false);
