@@ -117,7 +117,7 @@ $route = new routing();
 	
 		</footer>
 	</div>
-	<script defer src="<?=$route->root?>js/libs/jquery-1.7.2.min.js"></script>
+	<script defer src="<?=$route->root?>js/libs/jquery-1.8.0.js"></script>
 	<script defer src="<?=$route->root?>js/mylibs/jquery.mousewheel.js"></script>
 	<script defer src="<?=$route->root?>js/mylibs/jquery.jscrollpane.min.js"></script>
 	<script defer src="<?=$route->root?>js/mylibs/jquery.cookie.js"></script>
