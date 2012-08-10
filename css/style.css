@@ -222,19 +222,12 @@ html  {
 }
 
 body {
-  background-image: linear-gradient(bottom, rgb(100,125,150) 1%, rgb(135,150,165) 51%);
-  background-image: -o-linear-gradient(bottom, rgb(100,125,150) 1%, rgb(135,150,165) 51%);
-  background-image: -moz-linear-gradient(bottom, rgb(100,125,150) 1%, rgb(135,150,165) 51%);
-  background-image: -webkit-linear-gradient(bottom, rgb(100,125,150) 1%, rgb(135,150,165) 51%);
-  background-image: -ms-linear-gradient(bottom, rgb(100,125,150) 1%, rgb(135,150,165) 51%); 
-
-  background-image: -webkit-gradient(
-    linear,
-    left bottom,
-    left top,
-    color-stop(0.01, rgb(116,127,133)),
-    color-stop(0.51, rgb(179,196,204))
-  );
+  background-image: linear-gradient(bottom, rgb(100,125,150) 1%, rgb(147,166,185) 51%);
+  background-image: -o-linear-gradient(bottom, rgb(100,125,150) 1%, rgb(147,166,185) 51%);
+  background-image: -moz-linear-gradient(bottom, rgb(100,125,150) 1%, rgb(147,166,185) 51%);
+  background-image: -webkit-linear-gradient(bottom, rgb(100,125,150) 1%, rgb(147,166,185) 51%);
+  background-image: -ms-linear-gradient(bottom, rgb(100,125,150) 1%, rgb(147,166,185) 51%); 
+  background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.01, rgb(100,125,150)), color-stop(0.51, rgb(147,166,185)));
 }
 
 li,ul {
@@ -249,7 +242,7 @@ li,ul {
 /*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 .white_king {
   display: inline-block;
-  background:transparent url(../img/pieces.png);
+  background:transparent url(../img/pieces2.png);
   background-position: 0px 0px;
   width: 64px;
   height: 64px;
