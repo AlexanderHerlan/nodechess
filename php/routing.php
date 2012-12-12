@@ -9,7 +9,7 @@ class routing {
 	public $commands;
 	
 	public function __construct() {
-		$this->root = "https://" . $_SERVER['SERVER_NAME'] . "/nodechessdev/";
+		$this->root = "https://" . $_SERVER['SERVER_NAME'] . "/nodechess/";
 		$this->uri = trim($_SERVER['REQUEST_URI'], "/");
 		$this->get = $_GET;
 		
