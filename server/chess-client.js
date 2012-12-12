@@ -155,10 +155,10 @@ chess_client.prototype.draw_pieces = function(stage, board, clientcolor, turn) {
     		bitmap.regX = 32;
     		bitmap.regY = 32;
     		//&& clientcolor == 'white'
-			if(isEven(turn)  && framenumber < 6) {
+			if(isEven(turn)  && framenumber < 6 && clientcolor == 'white') {
 				bitmap.onPress = this.drag_handler;
 			//&& clientcolor == 'black'
-			} else if(isOdd(turn)  && framenumber > 5) {
+			} else if(isOdd(turn)  && framenumber > 5 && clientcolor == 'black') {
 				bitmap.onPress = this.drag_handler;
 			}
 
