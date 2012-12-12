@@ -71,7 +71,7 @@ function start_game() {
     $("select, input:checkbox, input:radio, input:file, button, input:text").uniform();
 
 
-    self.socket = io.connect('https://snakebyte.net:6969');
+    self.socket = io.connect('https://snakebyte.net:6968');
 
     chess_client = new chess_client();
     chess_client.init_pieces();

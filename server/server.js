@@ -25,7 +25,7 @@ var http = require('http'),
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Port where we'll run the socket.io server
-var port = 6969;
+var port = 6968;
 // list of sockets belonging to ALL currently connected clients (users) 
 var clients = [ ];
 // list of all usernames currently in use
