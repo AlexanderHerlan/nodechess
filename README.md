@@ -5,4 +5,4 @@ A realtime 2 player chess game (with support for infinite spectators), written i
 
 Live demo available at:  http://chess.snakebyte.net
 
-![Preview of NodeChess](https://www.snakebyte.net/nodechess/preview.jpg "NodeChess Preview")
+![Preview of NodeChess](http://i.imgur.com/tjnKP.jpg "NodeChess Preview")
